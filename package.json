@@ -1,0 +1,79 @@
+{
+  "name": "hudhud",
+  "version": "0.6.2",
+  "description": "Hudhud desktop pet app",
+  "author": "ziadh",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ziadh/HudHud.git"
+  },
+  "type": "commonjs",
+  "license": "MIT",
+  "main": "build/main.js",
+  "scripts": {
+    "dev": "bun src/dev.ts",
+    "build": "bun x tsc && bun build src/app.ts --outfile=build/app.js --target=browser --format=iife && bun build src/preload.ts --outfile=build/preload.js --target=node --format=cjs --external electron && bun build src/theme-init.ts --outfile=build/theme-init.js --target=browser --format=iife && bun src/build-static.ts",
+    "dist:win": "bun run build && bun x electron-builder --win",
+    "dist:mac": "bun run build && bun x electron-builder --mac",
+    "release:github": "bun scripts/release-github.ts",
+    "watch": "bun x tsc --watch",
+    "typecheck": "bun x tsc --noEmit",
+    "lint": "bunx biome check --diagnostic-level=error src scripts",
+    "format": "bunx biome format --write src scripts"
+  },
+  "electronmon": {
+    "patterns": [
+      "build/**",
+      "assets/**",
+      "!src/**"
+    ]
+  },
+  "build": {
+    "appId": "com.hudhud.app",
+    "productName": "Hudhud",
+    "icon": "assets/logo.png",
+    "files": [
+      "build/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release",
+      "buildResources": "assets"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "ziadh",
+        "repo": "HudHud"
+      }
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "artifactName": "${productName}-${version}.${ext}"
+    },
+    "nsis": {
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}.${ext}"
+    }
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.14",
+    "@types/bun": "latest",
+    "@types/node": "^25.6.0",
+    "electron": "^41.5.0",
+    "electron-builder": "^26.8.1",
+    "electronmon": "^2.0.4"
+  },
+  "peerDependencies": {
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.3"
+  }
+}

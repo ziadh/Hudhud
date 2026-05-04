@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hudhud Pet</title>
+    <style>
+      html,
+      body {
+        width: 180px;
+        height: 192px;
+        margin: 0;
+        overflow: hidden;
+        background: transparent;
+        user-select: none;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+      }
+
+      .bubble {
+        box-sizing: border-box;
+        max-width: 172px;
+        margin: 0 4px 2px;
+        padding: 7px 9px;
+        border: 1px solid rgba(49, 87, 72, 0.24);
+        border-radius: 8px;
+        background: rgba(255, 252, 242, 0.94);
+        color: #17231d;
+        font: 600 12px/1.25 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        text-align: center;
+        white-space: pre-line;
+        box-shadow: 0 8px 24px rgba(3, 15, 10, 0.18);
+        pointer-events: none;
+      }
+
+      #sprite {
+        width: 120px;
+        height: 120px;
+        clip-path: inset(3px 0 0 0);
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="bubble" class="bubble" hidden></div>
+    <canvas id="sprite" width="120" height="120" aria-label="Hudhud desktop pet"></canvas>
+    <script src="./pet.js"></script>
+  </body>
+</html>
