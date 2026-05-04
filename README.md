@@ -1,5 +1,10 @@
 # Hudhud
 
+[![Downloads](https://img.shields.io/github/downloads/ziadh/Hudhud/total?label=downloads&logo=github&style=for-the-badge)](https://github.com/ziadh/Hudhud/releases)
+[![License](https://img.shields.io/github/license/ziadh/HudHud?style=for-the-badge)](LICENSE)
+[![TypeScript](https://img.shields.io/github/languages/top/ziadh/Hudhud?logo=typescript&style=for-the-badge)](https://github.com/ziadh/Hudhud)
+[![Release](https://img.shields.io/github/v/release/ziadh/Hudhud?label=release&style=for-the-badge)](https://github.com/ziadh/Hudhud/releases/latest)
+
 Hudhud is a desktop prayer-times app with an adorable hudhud (hoopoe) animated companion. The hudhud's job is to remind you of your prayers — right-click it to confirm each prayer on time.
 
 It is completely free. Download from the [releases](https://github.com/ziadh/HudHud/releases) page, or build it yourself below.
@@ -46,11 +51,13 @@ Compiles TypeScript, bundles the renderer (`build/app.js`) and theme initializer
 ## Package for distribution
 
 **Windows:**
+
 ```bash
 bun run dist:win
 ```
 
 **macOS:**
+
 ```bash
 bun run dist:mac
 ```
@@ -59,8 +66,8 @@ Output goes to `release/`. Releases should be code-signed (Windows) and notarize
 
 ## Configuration
 
-| Environment variable | Default | Description |
-|---|---|---|
+| Environment variable   | Default                    | Description                                                                           |
+| ---------------------- | -------------------------- | ------------------------------------------------------------------------------------- |
 | `FEEDBACK_WEBHOOK_URL` | Author's feedback endpoint | Webhook URL for the in-app feedback form. Forks can override it for their own builds. |
 
 Set this at build time or in your shell before running `bun run dev` to route feedback to a different endpoint.
@@ -69,11 +76,11 @@ Set this at build time or in your shell before running `bun run dev` to route fe
 
 Hudhud contacts the following third-party services:
 
-| Service | Purpose | Data sent |
-|---|---|---|
-| [api.aladhan.com](https://aladhan.com) | Prayer time calculation | City, country, calculation settings |
-| [countriesnow.space](https://countriesnow.space) | Country / city autocomplete | None (read-only lookups) |
-| `FEEDBACK_WEBHOOK_URL` endpoint | In-app feedback | Email (optional) and feedback text |
+| Service                                          | Purpose                     | Data sent                           |
+| ------------------------------------------------ | --------------------------- | ----------------------------------- |
+| [api.aladhan.com](https://aladhan.com)           | Prayer time calculation     | City, country, calculation settings |
+| [countriesnow.space](https://countriesnow.space) | Country / city autocomplete | None (read-only lookups)            |
+| `FEEDBACK_WEBHOOK_URL` endpoint                  | In-app feedback             | Email (optional) and feedback text  |
 
 No analytics, no tracking, no account required.
 
