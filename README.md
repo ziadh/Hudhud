@@ -9,7 +9,7 @@ Hudhud is a desktop prayer-times app with an adorable hudhud (hoopoe) animated c
 
 It is completely free. Download from the [releases](https://github.com/ziadh/HudHud/releases) page, or build it yourself below.
 
-![Hudhud showing a happy animation after completing a prayer](assets/sprites/happy.png)
+![Hudhud showing a happy animation after completing a prayer](assets/demo.gif)
 
 If you'd like a feature added, open an [issue](https://github.com/ziadh/HudHud/issues).
 
