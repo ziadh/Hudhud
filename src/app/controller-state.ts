@@ -48,6 +48,7 @@ export function setFormMode(mode: FormMode): void {
     mode === "onboarding" ? "Prayer Times Setup" : "Prayer Time Settings";
   form.classList.toggle("settings-mode", mode === "settings");
   settingsBackAction.hidden = mode !== "settings";
+  resetAction.hidden = mode !== "settings";
   primaryAction.hidden = mode === "settings";
   settingsTabs.hidden = mode !== "settings";
   updateSettingsPreviewVisibility();
