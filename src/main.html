@@ -912,6 +912,50 @@
           bottom: 14px;
         }
       }
+
+      .confirm-dialog {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--panel);
+        color: var(--text);
+        padding: 24px;
+        max-width: 360px;
+        width: calc(100% - 48px);
+        box-shadow: var(--floating-shadow);
+      }
+
+      .confirm-dialog::backdrop {
+        background: rgb(0 0 0 / 0.38);
+        backdrop-filter: blur(2px);
+      }
+
+      .confirm-dialog h2 {
+        font-size: 1rem;
+        font-weight: 680;
+        margin: 0 0 8px;
+      }
+
+      .confirm-dialog p {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin: 0 0 20px;
+      }
+
+      .confirm-dialog-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+
+      .button.danger {
+        color: var(--on-accent);
+        background: var(--danger);
+        border: none;
+      }
+
+      .button.danger:hover {
+        opacity: 0.88;
+      }
     </style>
   </head>
   <body>
@@ -1058,6 +1102,15 @@
         <section id="preview-pane" class="preview-pane"></section>
       </section>
     </main>
+
+    <dialog id="reset-confirm-dialog" class="confirm-dialog">
+      <h2>Reset to defaults?</h2>
+      <p>All your settings will be cleared and you'll restart setup from scratch.</p>
+      <div class="confirm-dialog-actions">
+        <button id="reset-cancel-action" class="button secondary" type="button">Cancel</button>
+        <button id="reset-confirm-action" class="button danger" type="button">Reset</button>
+      </div>
+    </dialog>
 
     <aside class="feedback-widget" aria-label="Feedback">
       <section id="feedback-panel" class="feedback-panel" hidden>

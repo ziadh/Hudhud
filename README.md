@@ -1,6 +1,6 @@
 # Hudhud
 
-[![Downloads](https://img.shields.io/github/downloads/ziadh/Hudhud/total?label=downloads&logo=github&style=for-the-badge)](https://github.com/ziadh/Hudhud/releases)
+[![Downloads](https://img.shields.io/github/downloads/ziadh/HudHud/total?label=downloads&logo=github&style=for-the-badge)](https://github.com/ziadh/Hudhud/releases)
 [![License](https://img.shields.io/github/license/ziadh/HudHud?style=for-the-badge)](LICENSE)
 [![TypeScript](https://img.shields.io/github/languages/top/ziadh/Hudhud?logo=typescript&style=for-the-badge)](https://github.com/ziadh/Hudhud)
 [![Release](https://img.shields.io/github/v/release/ziadh/Hudhud?label=release&style=for-the-badge)](https://github.com/ziadh/Hudhud/releases/latest)

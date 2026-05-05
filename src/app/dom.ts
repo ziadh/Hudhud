@@ -28,6 +28,15 @@ export const settingsPreviewToggle = query<HTMLInputElement>(
 export const primaryAction = query<HTMLButtonElement>("#primary-action");
 export const backAction = query<HTMLButtonElement>("#back-action");
 export const resetAction = query<HTMLButtonElement>("#reset-action");
+export const resetConfirmDialog = query<HTMLDialogElement>(
+  "#reset-confirm-dialog",
+);
+export const resetConfirmAction = query<HTMLButtonElement>(
+  "#reset-confirm-action",
+);
+export const resetCancelAction = query<HTMLButtonElement>(
+  "#reset-cancel-action",
+);
 export const locationStep = query<HTMLElement>("#location-step");
 export const calculationStep = query<HTMLElement>("#calculation-step");
 export const generalStep = query<HTMLElement>("#general-step");

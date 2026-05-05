@@ -36,6 +36,9 @@ import {
   offsetMaghrib,
   previewPane,
   resetAction,
+  resetCancelAction,
+  resetConfirmAction,
+  resetConfirmDialog,
   schoolButtons,
   settingsBackAction,
   settingsPreviewToggle,
@@ -93,6 +96,15 @@ export function bindEvents(): void {
   });
 
   resetAction.addEventListener("click", () => {
+    resetConfirmDialog.showModal();
+  });
+
+  resetCancelAction.addEventListener("click", () => {
+    resetConfirmDialog.close();
+  });
+
+  resetConfirmAction.addEventListener("click", () => {
+    resetConfirmDialog.close();
     localStorage.removeItem(SETTINGS_KEY);
     localStorage.removeItem(PRAYER_CONFIRM_HINT_SEEN_KEY);
     state.previewResult = null;
