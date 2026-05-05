@@ -17,10 +17,32 @@
       }
 
       body {
+        position: relative;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: flex-end;
+      }
+
+      .dev-badge {
+        position: absolute;
+        top: 4px;
+        left: 50%;
+        z-index: 2;
+        box-sizing: border-box;
+        min-width: 42px;
+        transform: translateX(-50%);
+        padding: 3px 7px;
+        border: 1px solid rgba(255, 255, 255, 0.64);
+        border-radius: 999px;
+        background: rgba(214, 37, 51, 0.96);
+        color: #ffffff;
+        font: 800 11px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        letter-spacing: 0;
+        text-align: center;
+        text-transform: uppercase;
+        box-shadow: 0 4px 12px rgba(42, 6, 9, 0.32);
+        pointer-events: none;
       }
 
       .bubble {
@@ -48,6 +70,7 @@
     </style>
   </head>
   <body>
+    <div id="dev-badge" class="dev-badge" hidden>DEV</div>
     <div id="bubble" class="bubble" hidden></div>
     <canvas id="sprite" width="120" height="120" aria-label="Hudhud desktop pet"></canvas>
     <script src="./pet.js"></script>

@@ -267,6 +267,7 @@ function createPetWindow(): BrowserWindow {
     backgroundColor: "#00000000",
     webPreferences: {
       preload: fromDist("preload.js"),
+      additionalArguments: [`--hudhud-dev=${isDevelopment() ? "1" : "0"}`],
       contextIsolation: true,
       nodeIntegration: false,
     },

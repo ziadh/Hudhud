@@ -74,6 +74,7 @@ const frameCenters = {
 
 const spriteElement = document.querySelector<HTMLCanvasElement>("#sprite");
 const bubbleElement = document.querySelector<HTMLElement>("#bubble");
+const devBadgeElement = document.querySelector<HTMLElement>("#dev-badge");
 
 if (spriteElement === null) {
   throw new Error("Missing #sprite element");
@@ -83,8 +84,13 @@ if (bubbleElement === null) {
   throw new Error("Missing #bubble element");
 }
 
+if (devBadgeElement === null) {
+  throw new Error("Missing #dev-badge element");
+}
+
 const sprite = spriteElement;
 const bubble = bubbleElement;
+const devBadge = devBadgeElement;
 const spriteContext = sprite.getContext("2d");
 
 if (spriteContext === null) {
@@ -95,6 +101,7 @@ const context: CanvasRenderingContext2D = spriteContext;
 
 context.imageSmoothingEnabled = true;
 context.imageSmoothingQuality = "high";
+devBadge.hidden = !window.hudhud.isDev;
 
 const spriteImages = new Map<AnimationState, HTMLImageElement>();
 
