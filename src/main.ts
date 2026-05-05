@@ -57,6 +57,19 @@ function isDevelopment(): boolean {
   return !app.isPackaged;
 }
 
+function configureAppIdentity(): void {
+  app.setName(appTitle());
+
+  if (!isDevelopment()) {
+    return;
+  }
+
+  app.setPath(
+    "userData",
+    path.join(app.getPath("appData"), `${BASE_APP_TITLE} Dev`),
+  );
+}
+
 function configureDevelopmentCache(): void {
   if (!isDevelopment()) {
     return;
@@ -339,6 +352,7 @@ function movePetWindow(deltaX: number, deltaY: number): void {
 }
 
 configureDevelopmentCache();
+configureAppIdentity();
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
@@ -348,7 +362,6 @@ if (!app.requestSingleInstanceLock()) {
   });
 
   app.whenReady().then(() => {
-    app.setName(appTitle());
     Menu.setApplicationMenu(null);
 
     updateManager = new UpdateManager(
