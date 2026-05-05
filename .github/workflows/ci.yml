@@ -5,6 +5,10 @@ on:
     branches: [main]
   pull_request:
 
+defaults:
+  run:
+    working-directory: electron-app
+
 jobs:
   check:
     runs-on: ubuntu-latest
