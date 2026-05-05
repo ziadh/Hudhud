@@ -6,8 +6,8 @@ import {
   PET_ONBOARDING_BUBBLE,
   PET_PRAYER_CONFIRM_HINT,
   PET_SCHEDULER_INTERVAL_MS,
-  PRAYER_CONFIRM_HINT_SEEN_KEY,
 } from "./constants";
+import { PRAYER_CONFIRM_HINT_SEEN_KEY } from "./storage-keys";
 import { parseTimingDate } from "./parsers";
 import { confirmedPrayerOccurrences, state } from "./state";
 import type { PetDecision, PrayerOccurrence, PrayerResult } from "./types";

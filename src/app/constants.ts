@@ -1,8 +1,6 @@
 import type { PrayerSettings } from "../types";
 import type { HybridOption, MethodOption } from "./types";
 
-export const SETTINGS_KEY = "hudhud:prayer-settings:v1";
-export const THEME_KEY = "hudhud:theme:v1";
 export const API_BASE = "https://api.aladhan.com/v1/timingsByCity";
 export const COUNTRIES_API = "https://countriesnow.space/api/v0.1/countries";
 export const STATES_API =
@@ -21,8 +19,6 @@ export const SECONDARY_PRAYERS = ["Sunrise"] as const;
 export const STATE_REQUIRED_COUNTRIES = new Set(["United States", "Canada"]);
 
 export const PET_ONBOARDING_BUBBLE = "Click me to set up your settings";
-export const PRAYER_CONFIRM_HINT_SEEN_KEY =
-  "hudhud:prayer-confirm-hint-seen:v1";
 export const PET_PRAYER_CONFIRM_HINT = "Right click to confirm done";
 export const PET_ALERT_WINDOW_MS = 10 * 60 * 1000;
 export const PET_SCHEDULER_INTERVAL_MS = 15 * 1000;

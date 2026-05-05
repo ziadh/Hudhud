@@ -1,5 +1,5 @@
 import type { ThemePreference } from "../types";
-import { THEME_KEY } from "./constants";
+import { THEME_KEY } from "./storage-keys";
 import { themeButtons } from "./dom";
 
 export function loadThemePreference(): ThemePreference {

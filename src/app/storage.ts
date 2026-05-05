@@ -1,5 +1,6 @@
 import type { PrayerSettings } from "../types";
-import { defaultSettings, SETTINGS_KEY } from "./constants";
+import { defaultSettings } from "./constants";
+import { SETTINGS_KEY } from "./storage-keys";
 import { isPrayerSettings } from "./parsers";
 
 export function saveSettings(settings: PrayerSettings): void {

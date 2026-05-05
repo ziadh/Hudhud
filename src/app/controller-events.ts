@@ -1,8 +1,8 @@
+import { defaultSettings } from "./constants";
 import {
-  defaultSettings,
   PRAYER_CONFIRM_HINT_SEEN_KEY,
   SETTINGS_KEY,
-} from "./constants";
+} from "./storage-keys";
 import {
   clearScheduledPreview,
   completeSetupFromPreview,
