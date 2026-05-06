@@ -55,6 +55,9 @@
       ],
       "artifactName": "${productName}-${version}.${ext}"
     },
+    "mac": {
+      "icon": "assets/512.png"
+    },
     "nsis": {
       "artifactName": "${productName}-Setup-${version}.${ext}"
     },
