@@ -243,6 +243,11 @@ window.addEventListener("mousedown", (event) => {
     return;
   }
 
+  const sprite = document.getElementById("sprite");
+  if (event.target !== sprite) {
+    return;
+  }
+
   isDragging = true;
   didDrag = false;
   lastPointerScreenX = event.screenX;
