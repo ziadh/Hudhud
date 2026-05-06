@@ -956,6 +956,41 @@
       .button.danger:hover {
         opacity: 0.88;
       }
+
+      .prayer-banner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 10px 16px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        background: var(--gold-soft);
+        border: 1px solid var(--gold-border);
+      }
+
+      .prayer-banner-text {
+        margin: 0;
+        color: var(--gold);
+        font-size: 0.92rem;
+        font-weight: 640;
+      }
+
+      .prayer-banner-confirm {
+        flex-shrink: 0;
+        padding: 6px 14px;
+        border-radius: 7px;
+        border: 1px solid var(--gold-border);
+        background: transparent;
+        color: var(--gold);
+        font-size: 0.85rem;
+        font-weight: 640;
+        cursor: pointer;
+      }
+
+      .prayer-banner-confirm:hover {
+        background: var(--gold-soft);
+      }
     </style>
   </head>
   <body>
@@ -974,6 +1009,11 @@
           <button id="update-action" class="update-action" type="button" hidden></button>
         </div>
       </header>
+
+      <div id="prayer-banner" class="prayer-banner" hidden>
+        <p id="prayer-banner-text" class="prayer-banner-text"></p>
+        <button id="prayer-banner-confirm" class="prayer-banner-confirm" type="button">I prayed</button>
+      </div>
 
       <section class="layout" aria-live="polite">
         <form id="settings-form" class="form-pane" novalidate>

@@ -1,4 +1,11 @@
 import type { MainPrayerName, PetStatus } from "../types";
+
+type PetStatusCallback = (status: PetStatus) => void;
+let petStatusCallback: PetStatusCallback | null = null;
+
+export function setPetStatusCallback(cb: PetStatusCallback): void {
+  petStatusCallback = cb;
+}
 import {
   MAIN_PRAYERS,
   PET_ALERT_WINDOW_MS,
@@ -30,6 +37,7 @@ export function updatePetScheduler(): void {
   const nextStatus = withPrayerPrompt(decision.status);
   state.activePrayerOccurrenceKey = decision.activeOccurrenceKey;
   window.hudhud.updatePetStatus(nextStatus);
+  petStatusCallback?.(nextStatus);
 
   if (state.happyUntil !== null && Date.now() >= state.happyUntil) {
     state.happyUntil = null;
@@ -74,6 +82,17 @@ export function confirmCurrentPrayer(prayer: MainPrayerName): void {
     clearHappyTimeout();
     updatePetScheduler();
   }, PET_HAPPY_MS);
+}
+
+export function confirmActivePrayer(): void {
+  const decision = getPetDecision();
+  if (
+    decision.status.animation !== "prayer" ||
+    decision.status.activePrayer === undefined
+  ) {
+    return;
+  }
+  confirmCurrentPrayer(decision.status.activePrayer);
 }
 
 export function clearHappyTimeout(): void {

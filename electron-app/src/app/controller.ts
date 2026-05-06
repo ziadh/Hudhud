@@ -15,12 +15,21 @@ import {
   setRolloverHandler,
   startNextPrayerCountdown,
 } from "./countdown";
-import { devBadge, launchAtStartup, primaryAction } from "./dom";
+import {
+  devBadge,
+  launchAtStartup,
+  prayerBanner,
+  prayerBannerConfirm,
+  prayerBannerText,
+  primaryAction,
+} from "./dom";
 import { bindFeedbackEvents } from "./feedback";
 import { fillForm, populateMethods, readFormSettings } from "./form";
 import { loadCountryCityOptions } from "./location";
 import {
+  confirmActivePrayer,
   confirmCurrentPrayer,
+  setPetStatusCallback,
   startPetScheduler,
   updatePetScheduler,
 } from "./pet-scheduler";
@@ -272,5 +281,18 @@ function applyEnvironmentMarkers(): void {
 function bindPetEvents(): void {
   window.hudhud.onConfirmPrayer((prayer) => {
     confirmCurrentPrayer(prayer);
+  });
+
+  setPetStatusCallback((status) => {
+    if (status.animation === "prayer" && status.activePrayer !== undefined) {
+      prayerBannerText.textContent = `${status.activePrayer} prayer is due`;
+      prayerBanner.hidden = false;
+    } else {
+      prayerBanner.hidden = true;
+    }
+  });
+
+  prayerBannerConfirm.addEventListener("click", () => {
+    confirmActivePrayer();
   });
 }

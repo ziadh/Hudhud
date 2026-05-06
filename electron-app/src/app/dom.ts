@@ -82,3 +82,6 @@ export const schoolButtons = Array.from(
 export const themeButtons = Array.from(
   document.querySelectorAll<HTMLButtonElement>("[data-theme-value]"),
 );
+export const prayerBanner = query<HTMLElement>("#prayer-banner");
+export const prayerBannerText = query<HTMLElement>("#prayer-banner-text");
+export const prayerBannerConfirm = query<HTMLButtonElement>("#prayer-banner-confirm");
