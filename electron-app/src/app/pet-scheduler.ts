@@ -76,6 +76,7 @@ export function confirmCurrentPrayer(prayer: MainPrayerName): void {
   state.activePrayerOccurrenceKey = null;
   state.happyUntil = Date.now() + PET_HAPPY_MS;
   window.hudhud.updatePetStatus({ animation: "happy" });
+  petStatusCallback?.({ animation: "happy" });
   clearHappyTimeout();
   state.happyTimeout = window.setTimeout(() => {
     state.happyUntil = null;
