@@ -1,6 +1,6 @@
 {
   "name": "hudhud",
-  "version": "0.6.3",
+  "version": "0.6.5",
   "description": "Hudhud desktop pet app",
   "author": "ziadh",
   "repository": {
@@ -50,19 +50,25 @@
     ],
     "win": {
       "target": [
-        "nsis",
-        "portable"
+        "nsis"
       ],
-      "artifactName": "${productName}-${version}.${ext}"
+      "artifactName": "${productName}-Setup-${version}.${ext}"
     },
     "mac": {
       "icon": "assets/512.png"
     },
     "nsis": {
-      "artifactName": "${productName}-Setup-${version}.${ext}"
-    },
-    "portable": {
-      "artifactName": "${productName}-${version}.${ext}"
+      "artifactName": "${productName}-Setup-${version}.${ext}",
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false,
+      "shortcutName": "Hudhud",
+      "runAfterFinish": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "deleteAppDataOnUninstall": false,
+      "differentialPackage": true,
+      "guid": "4b3e87bd-5863-412b-a0d2-c33f26a286ef"
     }
   },
   "devDependencies": {
