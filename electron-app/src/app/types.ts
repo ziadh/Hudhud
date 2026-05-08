@@ -40,6 +40,7 @@ export interface PrayerOccurrence {
 export interface PetDecision {
   status: import("../types").PetStatus;
   activeOccurrenceKey: string | null;
+  activePrayerStartedAtMs: number | null;
 }
 
 export interface AladhanResponse {

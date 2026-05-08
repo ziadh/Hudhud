@@ -21,6 +21,7 @@ export const STATE_REQUIRED_COUNTRIES = new Set(["United States", "Canada"]);
 export const PET_ONBOARDING_BUBBLE = "Click me to set up your settings";
 export const PET_PRAYER_CONFIRM_HINT = "Right click to confirm done";
 export const PET_ALERT_WINDOW_MS = 10 * 60 * 1000;
+export const PET_PRAYER_ON_TIME_WINDOW_MS = 60 * 60 * 1000;
 export const PET_SCHEDULER_INTERVAL_MS = 15 * 1000;
 export const PET_HAPPY_MS = 20 * 1000;
 

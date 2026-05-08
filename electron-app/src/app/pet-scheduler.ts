@@ -12,6 +12,7 @@ import {
   PET_HAPPY_MS,
   PET_ONBOARDING_BUBBLE,
   PET_PRAYER_CONFIRM_HINT,
+  PET_PRAYER_ON_TIME_WINDOW_MS,
   PET_SCHEDULER_INTERVAL_MS,
 } from "./constants";
 import { PRAYER_CONFIRM_HINT_SEEN_KEY } from "./storage-keys";
@@ -34,7 +35,10 @@ export function startPetScheduler(): void {
 
 export function updatePetScheduler(): void {
   const decision = getPetDecision();
-  const nextStatus = withPrayerPrompt(decision.status);
+  const nextStatus = withPrayerPrompt(
+    decision.status,
+    decision.activePrayerStartedAtMs,
+  );
   state.activePrayerOccurrenceKey = decision.activeOccurrenceKey;
   window.hudhud.updatePetStatus(nextStatus);
   petStatusCallback?.(nextStatus);
@@ -45,12 +49,24 @@ export function updatePetScheduler(): void {
   }
 }
 
-function withPrayerPrompt(status: PetStatus): PetStatus {
-  if (status.animation !== "prayer" || status.activePrayer === undefined) {
+function withPrayerPrompt(
+  status: PetStatus,
+  activePrayerStartedAtMs: number | null,
+): PetStatus {
+  if (
+    status.animation !== "prayer" ||
+    status.activePrayer === undefined ||
+    activePrayerStartedAtMs === null
+  ) {
     return status;
   }
 
-  const lines = [`Time for ${status.activePrayer}`];
+  const prayerStartedElapsedMs = Date.now() - activePrayerStartedAtMs;
+  const prayerPrompt =
+    prayerStartedElapsedMs < PET_PRAYER_ON_TIME_WINDOW_MS
+      ? `time for ${status.activePrayer}`
+      : `Did you pray ${status.activePrayer}?`;
+  const lines = [prayerPrompt];
   if (!hasSeenPrayerConfirmHint()) {
     lines.push(PET_PRAYER_CONFIRM_HINT);
   }
@@ -118,6 +134,7 @@ function getPetDecision(now = new Date()): PetDecision {
     return {
       status: { animation: "happy" },
       activeOccurrenceKey: null,
+      activePrayerStartedAtMs: null,
     };
   }
 
@@ -128,6 +145,7 @@ function getPetDecision(now = new Date()): PetDecision {
         bubbleText: PET_ONBOARDING_BUBBLE,
       },
       activeOccurrenceKey: null,
+      activePrayerStartedAtMs: null,
     };
   }
 
@@ -139,6 +157,7 @@ function getPetDecision(now = new Date()): PetDecision {
         bubbleText: PET_ONBOARDING_BUBBLE,
       },
       activeOccurrenceKey: null,
+      activePrayerStartedAtMs: null,
     };
   }
 
@@ -150,6 +169,7 @@ function getPetDecision(now = new Date()): PetDecision {
       return {
         status: { animation: "idle" },
         activeOccurrenceKey: null,
+        activePrayerStartedAtMs: null,
       };
     }
 
@@ -169,6 +189,7 @@ function getPetDecision(now = new Date()): PetDecision {
           activePrayer: occurrence.prayer,
         },
         activeOccurrenceKey: occurrence.key,
+        activePrayerStartedAtMs: occurrence.date.getTime(),
       };
     }
   }
@@ -182,6 +203,7 @@ function getPetDecision(now = new Date()): PetDecision {
     return {
       status: { animation: "sleep" },
       activeOccurrenceKey: null,
+      activePrayerStartedAtMs: null,
     };
   }
 
@@ -194,12 +216,14 @@ function getPetDecision(now = new Date()): PetDecision {
     return {
       status: { animation: "alert" },
       activeOccurrenceKey: null,
+      activePrayerStartedAtMs: null,
     };
   }
 
   return {
     status: { animation: "idle" },
     activeOccurrenceKey: null,
+    activePrayerStartedAtMs: null,
   };
 }
 
