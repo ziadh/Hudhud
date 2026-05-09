@@ -167,14 +167,14 @@
       .brand-title {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
       }
 
-      .brand-mark {
-        width: 34px;
-        height: 4px;
-        border-radius: 999px;
-        background: var(--gold);
+      .brand-logo {
+        width: 32px;
+        height: 32px;
+        flex: 0 0 auto;
+        object-fit: contain;
       }
 
       h1,
@@ -1001,8 +1001,8 @@
     <main class="app">
       <header class="topbar">
         <div class="brand">
-          <span class="brand-mark"></span>
           <div class="brand-title">
+            <img class="brand-logo" src="../assets/logo.png" alt="" aria-hidden="true" />
             <h1>Hudhud</h1>
             <span id="app-version" class="app-version" hidden></span>
             <span id="dev-badge" class="dev-badge" hidden>Dev</span>

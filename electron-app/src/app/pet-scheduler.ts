@@ -64,7 +64,7 @@ function withPrayerPrompt(
   const prayerStartedElapsedMs = Date.now() - activePrayerStartedAtMs;
   const prayerPrompt =
     prayerStartedElapsedMs < PET_PRAYER_ON_TIME_WINDOW_MS
-      ? `time for ${status.activePrayer}`
+      ? `Time for ${status.activePrayer}`
       : `Did you pray ${status.activePrayer}?`;
   const lines = [prayerPrompt];
   if (!hasSeenPrayerConfirmHint()) {
