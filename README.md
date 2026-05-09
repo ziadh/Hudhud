@@ -62,6 +62,7 @@ bun run dist:win
 bun run dist:mac
 ```
 
+
 Output goes to `release/`. Releases should be code-signed (Windows) and notarized (macOS) before distribution.
 
 ## Configuration
@@ -93,3 +94,5 @@ No analytics, no tracking, no account required.
 ## License
 
 [MIT](LICENSE)
+
+[![Star History Chart](https://api.star-history.com/svg?repos=ziadh/Hudhud&type=date&legend=top-left)](https://www.star-history.com/#ziadh/Hudhud&type=date&legend=top-left)
