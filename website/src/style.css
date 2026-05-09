@@ -166,10 +166,19 @@ figure {
   align-items: center;
   justify-content: flex-end;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 18px;
 }
 
-.site-nav a,
+.site-nav a {
+  min-height: 34px;
+  padding: 7px 0;
+  color: var(--label);
+  font-size: 0.84rem;
+  font-weight: 720;
+  line-height: 1;
+  text-decoration: none;
+}
+
 .text-link {
   min-height: 34px;
   border: 1px solid var(--line);
@@ -183,7 +192,10 @@ figure {
   text-decoration: none;
 }
 
-.site-nav a:hover,
+.site-nav a:hover {
+  color: var(--ink);
+}
+
 .text-link:hover {
   border-color: var(--line-strong);
   background: var(--panel-soft);
@@ -538,6 +550,24 @@ h3 {
 .footer p {
   margin-top: 4px;
   font-size: 0.84rem;
+}
+
+.footer-actions {
+  gap: 18px;
+}
+
+.footer-actions .text-link {
+  min-height: 34px;
+  border: 0;
+  border-radius: 0;
+  padding: 7px 0;
+  color: var(--label);
+  background: transparent;
+}
+
+.footer-actions .text-link:hover {
+  color: var(--ink);
+  background: transparent;
 }
 
 @media (max-width: 920px) {
