@@ -58,7 +58,8 @@ async function submitFeedback(): Promise<void> {
     });
 
     feedbackForm.reset();
-    setStatus("Thanks, feedback sent.", "success");
+    setStatus("", "idle");
+    setFeedbackPanelOpen(false);
   } catch (err) {
     console.error("Failed to send feedback:", err);
     setStatus("Feedback could not be sent. Try again.", "error");

@@ -23,6 +23,7 @@
       --green: #0f5d49;
       --green-hover: #0b4d3c;
       --gold: #b8872d;
+      --orange: #c46626;
       --danger: #a13b2b;
       --on-accent: #ffffff;
       --body-overlay: linear-gradient(180deg, rgb(255 255 255 / 0.64), transparent 280px);
@@ -62,6 +63,7 @@
         --green: #62d6ad;
         --green-hover: #7be5c1;
         --gold: #e0b85a;
+        --orange: #f09a5b;
         --danger: #ff917f;
         --on-accent: #07130f;
         --body-overlay: none;
@@ -93,6 +95,7 @@
       --green: #62d6ad;
       --green-hover: #7be5c1;
       --gold: #e0b85a;
+      --orange: #f09a5b;
       --danger: #ff917f;
       --on-accent: #07130f;
       --body-overlay: none;
@@ -1059,6 +1062,39 @@
       border-radius: 8px;
       padding: 12px;
       background: var(--surface);
+    }
+
+    .time-header,
+    .secondary-time {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .prayer-icon {
+      flex: 0 0 auto;
+      width: 18px;
+      height: 18px;
+      color: var(--gold);
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .prayer-icon-fajr,
+    .prayer-icon-isha {
+      color: var(--green);
+    }
+
+    .prayer-icon-asr {
+      color: var(--label);
+    }
+
+    .prayer-icon-maghrib {
+      color: var(--orange);
     }
 
     .time-name {

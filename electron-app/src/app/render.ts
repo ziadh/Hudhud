@@ -11,7 +11,7 @@ import {
 } from "./formatters";
 import { parseTimingDate } from "./parsers";
 import { state } from "./state";
-import type { PrayerResult, PrayerTimings } from "./types";
+import type { PrayerName, PrayerResult, PrayerTimings } from "./types";
 
 export function renderEmptyPreviewHtml(): void {
   const message =
@@ -94,7 +94,7 @@ function renderTimes(
       ${MAIN_PRAYERS.map(
         (name) => `
           <div class="time-cell">
-            <div class="time-name">${name}</div>
+            ${renderTimeHeader(name)}
             <div class="time-value">${escapeHtml(formatTime(result.timings[name], result.timezone))}</div>
           </div>
         `,
@@ -106,11 +106,88 @@ function renderTimes(
         const value = result.timings[name];
         return value === undefined
           ? ""
-          : `<span>${name}: ${escapeHtml(formatTime(value, result.timezone))}</span>`;
+          : `
+            <span class="secondary-time">
+              ${renderPrayerIcon(name)}
+              <span>${name}: ${escapeHtml(formatTime(value, result.timezone))}</span>
+            </span>
+          `;
       }).join("")}
     </div>
 
     <p class="updated">Last updated ${escapeHtml(formatUpdatedAt(result.updatedAt))} · ${escapeHtml(result.timezone)}</p>
+  `;
+}
+
+function renderTimeHeader(name: PrayerName): string {
+  return `
+    <div class="time-header">
+      ${renderPrayerIcon(name)}
+      <div class="time-name">${name}</div>
+    </div>
+  `;
+}
+
+function renderPrayerIcon(name: PrayerName): string {
+  const paths: Record<PrayerName, string> = {
+    Fajr: `
+      <path d="M3 18h18"></path>
+      <path d="M6 15.5a6 6 0 0 1 12 0"></path>
+      <path d="M8 7.5 6.7 6.2"></path>
+      <path d="M12 5.5V3.7"></path>
+      <path d="m16 7.5 1.3-1.3"></path>
+    `,
+    Sunrise: `
+      <path d="M3 17h18"></path>
+      <path d="M6 14a6 6 0 0 1 12 0"></path>
+      <path d="M12 2v3"></path>
+      <path d="m4.9 5.9 2.1 2.1"></path>
+      <path d="m19.1 5.9-2.1 2.1"></path>
+      <path d="M12 17v4"></path>
+      <path d="m8 21 4-4 4 4"></path>
+    `,
+    Dhuhr: `
+      <circle cx="12" cy="12" r="4"></circle>
+      <path d="M12 2v2"></path>
+      <path d="M12 20v2"></path>
+      <path d="m4.93 4.93 1.41 1.41"></path>
+      <path d="m17.66 17.66 1.41 1.41"></path>
+      <path d="M2 12h2"></path>
+      <path d="M20 12h2"></path>
+      <path d="m6.34 17.66-1.41 1.41"></path>
+      <path d="m19.07 4.93-1.41 1.41"></path>
+    `,
+    Asr: `
+      <circle cx="8" cy="8" r="3"></circle>
+      <path d="M8 1.8V3"></path>
+      <path d="M8 13v1.2"></path>
+      <path d="M1.8 8H3"></path>
+      <path d="M13 8h1.2"></path>
+      <path d="m3.6 3.6.8.8"></path>
+      <path d="m11.6 11.6.8.8"></path>
+      <path d="M4 19h17"></path>
+      <path d="m10 19 7-7"></path>
+      <path d="m14 19 5-5"></path>
+    `,
+    Maghrib: `
+      <path d="M3 18h18"></path>
+      <path d="M7 15a5 5 0 0 1 10 0"></path>
+      <path d="M12 9V5"></path>
+      <path d="m5 7 2.1 2.1"></path>
+      <path d="m19 7-2.1 2.1"></path>
+      <path d="m8 21 4-3 4 3"></path>
+    `,
+    Isha: `
+      <path d="M20.2 14.8A7 7 0 0 1 9.2 3.8 8.5 8.5 0 1 0 20.2 14.8Z"></path>
+      <path d="M17 4h.01"></path>
+      <path d="M20 8h.01"></path>
+    `,
+  };
+
+  return `
+    <svg class="prayer-icon prayer-icon-${name.toLowerCase()}" aria-hidden="true" viewBox="0 0 24 24">
+      ${paths[name]}
+    </svg>
   `;
 }
 
