@@ -23,8 +23,8 @@ import {
   savePetWindowPreferences,
 } from "./window-preferences";
 
-const PET_WIDTH = 180;
-const PET_HEIGHT = 192;
+const PET_WIDTH = 120;
+const PET_HEIGHT = 120;
 const PET_MARGIN = 24;
 const FIRST_UPDATE_CHECK_DELAY_MS = 10_000;
 const UPDATE_CHECK_INTERVAL_MS = 4 * 60 * 60 * 1_000;
