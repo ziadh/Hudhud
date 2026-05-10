@@ -77,6 +77,17 @@ export const feedbackEmail = query<HTMLInputElement>("#feedback-email");
 export const feedbackMessage = query<HTMLTextAreaElement>("#feedback-message");
 export const feedbackStatus = query<HTMLElement>("#feedback-status");
 export const feedbackSubmit = query<HTMLButtonElement>("#feedback-submit");
+export const releaseNotesAction = query<HTMLButtonElement>(
+  "#release-notes-action",
+);
+export const releaseNotesDialog = query<HTMLDialogElement>(
+  "#release-notes-dialog",
+);
+export const releaseNotesClose = query<HTMLButtonElement>(
+  "#release-notes-close",
+);
+export const releaseNotesStatus = query<HTMLElement>("#release-notes-status");
+export const releaseNotesList = query<HTMLElement>("#release-notes-list");
 export const schoolButtons = Array.from(
   document.querySelectorAll<HTMLButtonElement>("[data-school]"),
 );

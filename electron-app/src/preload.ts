@@ -5,6 +5,7 @@ import {
   type HudhudApi,
   type MainPrayerName,
   type PetStatus,
+  type ReleaseNote,
   type UpdateState,
 } from "./types";
 
@@ -102,6 +103,11 @@ const api: HudhudApi = {
   },
   isFeedbackEnabled() {
     return ipcRenderer.invoke(channels.feedbackEnabled) as Promise<boolean>;
+  },
+  getReleaseNotes() {
+    return ipcRenderer.invoke(channels.getReleaseNotes) as Promise<
+      ReleaseNote[]
+    >;
   },
   onUpdateState(callback) {
     const listener = (

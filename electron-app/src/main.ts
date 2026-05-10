@@ -15,6 +15,7 @@ import {
   type MainPrayerName,
   type PetStatus,
   type PetWindowPreferences,
+  type ReleaseNote,
 } from "./types";
 import { UpdateManager } from "./update-manager";
 import {
@@ -31,6 +32,9 @@ const BASE_APP_TITLE = "Hudhud";
 const FEEDBACK_WEBHOOK_URL =
   process.env.FEEDBACK_WEBHOOK_URL ??
   "https://n8n.ziadhussein.com/webhook/feedback";
+const GITHUB_RELEASES_API_URL =
+  "https://api.github.com/repos/ziadh/Hudhud/releases";
+const RELEASE_NOTES_LIMIT = 8;
 
 let mainWindow: BrowserWindow | null = null;
 let petWindow: BrowserWindow | null = null;
@@ -42,6 +46,7 @@ let currentPetStatus: PetStatus = {
   animation: "idle",
   bubbleText: PET_ONBOARDING_BUBBLE,
 };
+let releaseNotesCache: ReleaseNote[] | null = null;
 
 function fromDist(fileName: string): string {
   return path.join(__dirname, fileName);
@@ -158,6 +163,64 @@ async function sendFeedback(input: FeedbackInput): Promise<void> {
   if (!response.ok) {
     throw new Error(`Feedback webhook returned ${response.status}`);
   }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function parseReleaseNotes(input: unknown): ReleaseNote[] {
+  if (!Array.isArray(input)) {
+    throw new Error("GitHub releases response was not an array.");
+  }
+
+  return input
+    .filter(isRecord)
+    .map((release) => {
+      const tagName = release.tag_name;
+      const name = release.name;
+      const body = release.body;
+      const publishedAt = release.published_at;
+      const htmlUrl = release.html_url;
+
+      if (
+        typeof tagName !== "string" ||
+        typeof htmlUrl !== "string" ||
+        (body !== null && body !== undefined && typeof body !== "string")
+      ) {
+        return null;
+      }
+
+      return {
+        version: tagName,
+        title: typeof name === "string" && name.trim() !== "" ? name : tagName,
+        body: typeof body === "string" ? body : "",
+        publishedAt: typeof publishedAt === "string" ? publishedAt : null,
+        url: htmlUrl,
+      };
+    })
+    .filter((release): release is ReleaseNote => release !== null)
+    .slice(0, RELEASE_NOTES_LIMIT);
+}
+
+async function getReleaseNotes(): Promise<ReleaseNote[]> {
+  if (releaseNotesCache !== null) {
+    return releaseNotesCache;
+  }
+
+  const response = await fetch(GITHUB_RELEASES_API_URL, {
+    headers: {
+      Accept: "application/vnd.github+json",
+      "User-Agent": "Hudhud",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`GitHub releases returned ${response.status}`);
+  }
+
+  releaseNotesCache = parseReleaseNotes(await response.json());
+  return releaseNotesCache;
 }
 
 function createMainWindow(): BrowserWindow {
@@ -541,6 +604,7 @@ if (!app.requestSingleInstanceLock()) {
       sendFeedback(input),
     );
     ipcMain.handle(channels.feedbackEnabled, () => FEEDBACK_WEBHOOK_URL !== "");
+    ipcMain.handle(channels.getReleaseNotes, () => getReleaseNotes());
 
     mainWindow = createMainWindow();
     petWindow = createPetWindow();

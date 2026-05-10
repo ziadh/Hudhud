@@ -78,6 +78,7 @@ export const ipcChannels = {
   installUpdate: "updates:install",
   sendFeedback: "app:send-feedback",
   feedbackEnabled: "app:feedback-enabled",
+  getReleaseNotes: "app:get-release-notes",
 } as const;
 
 export type IpcChannel = (typeof ipcChannels)[keyof typeof ipcChannels];
@@ -103,6 +104,14 @@ export interface FeedbackInput {
   feedback: string;
 }
 
+export interface ReleaseNote {
+  version: string;
+  title: string;
+  body: string;
+  publishedAt: string | null;
+  url: string;
+}
+
 export interface HudhudApi {
   isDev: boolean;
   updatePetStatus(status: PetStatus): void;
@@ -124,6 +133,7 @@ export interface HudhudApi {
   onUpdateState(callback: (state: UpdateState) => void): () => void;
   sendFeedback(input: FeedbackInput): Promise<void>;
   isFeedbackEnabled(): Promise<boolean>;
+  getReleaseNotes(): Promise<ReleaseNote[]>;
 }
 
 declare global {

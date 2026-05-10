@@ -34,6 +34,7 @@ import {
   startPetScheduler,
   updatePetScheduler,
 } from "./pet-scheduler";
+import { bindReleaseNotesEvents } from "./release-notes";
 import {
   hasFuturePrayerTarget,
   renderDashboardHtml,
@@ -62,6 +63,7 @@ export async function init(): Promise<void> {
   bindPetEvents();
   bindPetAlwaysOnTopSync();
   bindUpdateEvents();
+  bindReleaseNotesEvents();
   setRolloverHandler(handleNextPrayerRollover);
   startPetScheduler();
   setState("loading");
