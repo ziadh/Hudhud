@@ -220,6 +220,13 @@
       font-weight: 760;
       line-height: 1;
       white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .app-version:hover {
+      border-color: var(--green-border);
+      color: var(--green);
+      background: var(--green-soft);
     }
 
     .update-action {
@@ -1226,7 +1233,7 @@
         <div class="brand-title">
           <img class="brand-logo" src="../assets/logo.png" alt="" aria-hidden="true" />
           <h1>Hudhud</h1>
-          <span id="app-version" class="app-version" hidden></span>
+            <span id="app-version" class="app-version" role="button" tabindex="0" title="View release notes" hidden></span>
           <span id="dev-badge" class="dev-badge" hidden>Dev</span>
         </div>
         <p class="subtitle">Prayer times tuned to your location.</p>

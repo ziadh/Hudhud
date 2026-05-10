@@ -1,6 +1,6 @@
 import type { ReleaseNote } from "../types";
 import {
-  releaseNotesAction,
+  appVersion,
   releaseNotesClose,
   releaseNotesDialog,
   releaseNotesList,
@@ -11,7 +11,19 @@ let hasLoadedReleaseNotes = false;
 let currentVersion: string | null = null;
 
 export function bindReleaseNotesEvents(): void {
-  releaseNotesAction.addEventListener("click", () => {
+  appVersion.addEventListener("click", () => {
+    releaseNotesDialog.showModal();
+    if (!hasLoadedReleaseNotes) {
+      void loadReleaseNotes();
+    }
+  });
+
+  appVersion.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+
+    event.preventDefault();
     releaseNotesDialog.showModal();
     if (!hasLoadedReleaseNotes) {
       void loadReleaseNotes();
@@ -30,7 +42,7 @@ export function bindReleaseNotesEvents(): void {
 }
 
 async function loadReleaseNotes(): Promise<void> {
-  releaseNotesAction.disabled = true;
+  appVersion.setAttribute("aria-busy", "true");
   releaseNotesStatus.textContent = "Loading release notes...";
   releaseNotesStatus.classList.remove("error");
   releaseNotesList.replaceChildren();
@@ -49,7 +61,7 @@ async function loadReleaseNotes(): Promise<void> {
       "Release notes could not be loaded. Check your connection and try again.";
     releaseNotesStatus.classList.add("error");
   } finally {
-    releaseNotesAction.disabled = false;
+    appVersion.removeAttribute("aria-busy");
   }
 }
 
