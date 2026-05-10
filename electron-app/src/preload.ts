@@ -50,6 +50,29 @@ const api: HudhudApi = {
   movePetWindow(deltaX, deltaY) {
     ipcRenderer.send(channels.movePetWindow, deltaX, deltaY);
   },
+  getPetAlwaysOnTop() {
+    return ipcRenderer.invoke(channels.getPetAlwaysOnTop) as Promise<boolean>;
+  },
+  setPetAlwaysOnTop(enabled) {
+    return ipcRenderer.invoke(
+      channels.setPetAlwaysOnTop,
+      enabled,
+    ) as Promise<boolean>;
+  },
+  onPetAlwaysOnTopChanged(callback) {
+    const listener = (
+      _event: Electron.IpcRendererEvent,
+      enabled: boolean,
+    ): void => {
+      callback(enabled);
+    };
+
+    ipcRenderer.on(channels.petAlwaysOnTopChanged, listener);
+
+    return () => {
+      ipcRenderer.removeListener(channels.petAlwaysOnTopChanged, listener);
+    };
+  },
   showMainWindow() {
     ipcRenderer.send(channels.showMainWindow);
   },

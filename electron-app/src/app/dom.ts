@@ -68,6 +68,7 @@ export const offsetAsr = query<HTMLInputElement>("#offset-asr");
 export const offsetMaghrib = query<HTMLInputElement>("#offset-maghrib");
 export const offsetIsha = query<HTMLInputElement>("#offset-isha");
 export const launchAtStartup = query<HTMLInputElement>("#launch-at-startup");
+export const petAlwaysOnTop = query<HTMLInputElement>("#pet-always-on-top");
 export const feedbackToggle = query<HTMLButtonElement>("#feedback-toggle");
 export const feedbackPanel = query<HTMLElement>("#feedback-panel");
 export const feedbackClose = query<HTMLButtonElement>("#feedback-close");
@@ -84,4 +85,6 @@ export const themeButtons = Array.from(
 );
 export const prayerBanner = query<HTMLElement>("#prayer-banner");
 export const prayerBannerText = query<HTMLElement>("#prayer-banner-text");
-export const prayerBannerConfirm = query<HTMLButtonElement>("#prayer-banner-confirm");
+export const prayerBannerConfirm = query<HTMLButtonElement>(
+  "#prayer-banner-confirm",
+);

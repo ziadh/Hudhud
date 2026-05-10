@@ -14,8 +14,13 @@ import {
   type FeedbackInput,
   type MainPrayerName,
   type PetStatus,
+  type PetWindowPreferences,
 } from "./types";
 import { UpdateManager } from "./update-manager";
+import {
+  loadPetWindowPreferences,
+  savePetWindowPreferences,
+} from "./window-preferences";
 
 const PET_WIDTH = 180;
 const PET_HEIGHT = 192;
@@ -32,6 +37,7 @@ let petWindow: BrowserWindow | null = null;
 let _tray: Tray | null = null;
 let updateManager: UpdateManager | null = null;
 let isQuitting = false;
+let petWindowPreferences: PetWindowPreferences | null = null;
 let currentPetStatus: PetStatus = {
   animation: "idle",
   bubbleText: PET_ONBOARDING_BUBBLE,
@@ -240,6 +246,15 @@ function createTray(): Tray {
 }
 
 function getInitialPetBounds(): Electron.Rectangle {
+  const savedPosition = getPetWindowPreferences().position;
+  if (savedPosition !== null) {
+    return clampPetBounds({
+      ...savedPosition,
+      width: PET_WIDTH,
+      height: PET_HEIGHT,
+    });
+  }
+
   const { workArea } = screen.getPrimaryDisplay();
 
   return {
@@ -250,15 +265,121 @@ function getInitialPetBounds(): Electron.Rectangle {
   };
 }
 
+function getPetWindowPreferences(): PetWindowPreferences {
+  if (petWindowPreferences === null) {
+    petWindowPreferences = loadPetWindowPreferences();
+  }
+
+  return petWindowPreferences;
+}
+
+function persistPetWindowPreferences(): void {
+  savePetWindowPreferences(getPetWindowPreferences());
+}
+
+function getPetAlwaysOnTop(): boolean {
+  return getPetWindowPreferences().alwaysOnTop;
+}
+
+function setPetAlwaysOnTop(enabled: boolean): boolean {
+  const preferences = getPetWindowPreferences();
+  preferences.alwaysOnTop = enabled;
+  persistPetWindowPreferences();
+  applyPetAlwaysOnTop(enabled);
+
+  if (mainWindow !== null && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send(channels.petAlwaysOnTopChanged, enabled);
+  }
+
+  return preferences.alwaysOnTop;
+}
+
+function applyPetAlwaysOnTop(enabled: boolean): void {
+  if (petWindow === null || petWindow.isDestroyed()) {
+    return;
+  }
+
+  if (enabled) {
+    petWindow.setAlwaysOnTop(true, "normal");
+    return;
+  }
+
+  petWindow.setAlwaysOnTop(false);
+}
+
+function clampPetBounds(bounds: Electron.Rectangle): Electron.Rectangle {
+  const workArea = getNearestDisplayWorkArea(bounds);
+  const maxX = workArea.x + workArea.width - PET_WIDTH;
+  const maxY = workArea.y + workArea.height - PET_HEIGHT;
+
+  return {
+    x:
+      workArea.width <= PET_WIDTH
+        ? workArea.x
+        : Math.min(Math.max(Math.round(bounds.x), workArea.x), maxX),
+    y:
+      workArea.height <= PET_HEIGHT
+        ? workArea.y
+        : Math.min(Math.max(Math.round(bounds.y), workArea.y), maxY),
+    width: PET_WIDTH,
+    height: PET_HEIGHT,
+  };
+}
+
+function getNearestDisplayWorkArea(
+  bounds: Electron.Rectangle,
+): Electron.Rectangle {
+  const displays = screen.getAllDisplays();
+  const centerX = bounds.x + bounds.width / 2;
+  const centerY = bounds.y + bounds.height / 2;
+  const nearestDisplay = displays.reduce((nearest, display) => {
+    const nearestCenterX = nearest.workArea.x + nearest.workArea.width / 2;
+    const nearestCenterY = nearest.workArea.y + nearest.workArea.height / 2;
+    const displayCenterX = display.workArea.x + display.workArea.width / 2;
+    const displayCenterY = display.workArea.y + display.workArea.height / 2;
+    const nearestDistance =
+      (centerX - nearestCenterX) ** 2 + (centerY - nearestCenterY) ** 2;
+    const displayDistance =
+      (centerX - displayCenterX) ** 2 + (centerY - displayCenterY) ** 2;
+
+    return displayDistance < nearestDistance ? display : nearest;
+  }, displays[0] ?? screen.getPrimaryDisplay());
+
+  return nearestDisplay.workArea;
+}
+
+function savePetWindowPosition(bounds: Electron.Rectangle): void {
+  const preferences = getPetWindowPreferences();
+  preferences.position = {
+    x: Math.round(bounds.x),
+    y: Math.round(bounds.y),
+  };
+  persistPetWindowPreferences();
+}
+
+function ensurePetWindowVisible(): void {
+  if (petWindow === null || petWindow.isDestroyed()) {
+    return;
+  }
+
+  const bounds = petWindow.getBounds();
+  const clampedBounds = clampPetBounds(bounds);
+  if (bounds.x !== clampedBounds.x || bounds.y !== clampedBounds.y) {
+    petWindow.setBounds(clampedBounds, false);
+  }
+  savePetWindowPosition(clampedBounds);
+}
+
 function createPetWindow(): BrowserWindow {
   const bounds = getInitialPetBounds();
+  const preferences = getPetWindowPreferences();
   const window = new BrowserWindow({
     ...bounds,
     title: "Hudhud Pet",
     icon: appLogoPath(),
     frame: false,
     transparent: true,
-    alwaysOnTop: true,
+    alwaysOnTop: preferences.alwaysOnTop,
     skipTaskbar: true,
     resizable: false,
     movable: true,
@@ -273,8 +394,8 @@ function createPetWindow(): BrowserWindow {
     },
   });
 
-  window.setAlwaysOnTop(true, "floating");
-  window.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  petWindow = window;
+  applyPetAlwaysOnTop(preferences.alwaysOnTop);
   window.loadFile(fromDist("pet.html"));
   window.webContents.on("context-menu", showPetContextMenu);
   window.once("ready-to-show", () => {
@@ -294,6 +415,15 @@ function showPetContextMenu(): void {
   }
 
   const menu = Menu.buildFromTemplate([
+    {
+      label: "Keep pet on top",
+      type: "checkbox",
+      checked: getPetAlwaysOnTop(),
+      click: (menuItem): void => {
+        setPetAlwaysOnTop(menuItem.checked);
+      },
+    },
+    { type: "separator" as const },
     ...(currentPetStatus.animation === "prayer" &&
     currentPetStatus.activePrayer !== undefined
       ? [
@@ -348,8 +478,14 @@ function movePetWindow(deltaX: number, deltaY: number): void {
     return;
   }
 
-  const [x, y] = petWindow.getPosition() as [number, number];
-  petWindow.setPosition(Math.round(x + deltaX), Math.round(y + deltaY), false);
+  const bounds = petWindow.getBounds();
+  const clampedBounds = clampPetBounds({
+    ...bounds,
+    x: bounds.x + deltaX,
+    y: bounds.y + deltaY,
+  });
+  petWindow.setBounds(clampedBounds, false);
+  savePetWindowPosition(clampedBounds);
 }
 
 configureDevelopmentCache();
@@ -387,6 +523,10 @@ if (!app.requestSingleInstanceLock()) {
     ipcMain.handle(channels.setLaunchAtStartup, (_event, enabled: boolean) =>
       setLaunchAtStartup(enabled),
     );
+    ipcMain.handle(channels.getPetAlwaysOnTop, () => getPetAlwaysOnTop());
+    ipcMain.handle(channels.setPetAlwaysOnTop, (_event, enabled: boolean) =>
+      setPetAlwaysOnTop(enabled),
+    );
     ipcMain.handle(channels.getUpdateState, () => updateManager?.getState());
     ipcMain.handle(channels.checkForUpdates, () =>
       updateManager?.checkForUpdates(),
@@ -405,6 +545,10 @@ if (!app.requestSingleInstanceLock()) {
     mainWindow = createMainWindow();
     petWindow = createPetWindow();
     _tray = createTray();
+
+    screen.on("display-added", ensurePetWindowVisible);
+    screen.on("display-removed", ensurePetWindowVisible);
+    screen.on("display-metrics-changed", ensurePetWindowVisible);
 
     setTimeout(() => {
       void updateManager?.checkForUpdates();

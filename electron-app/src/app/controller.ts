@@ -18,6 +18,7 @@ import {
 import {
   devBadge,
   launchAtStartup,
+  petAlwaysOnTop,
   prayerBanner,
   prayerBannerConfirm,
   prayerBannerText,
@@ -59,6 +60,7 @@ export async function init(): Promise<void> {
   bindEvents();
   void bindFeedbackEvents();
   bindPetEvents();
+  bindPetAlwaysOnTopSync();
   bindUpdateEvents();
   setRolloverHandler(handleNextPrayerRollover);
   startPetScheduler();
@@ -66,6 +68,7 @@ export async function init(): Promise<void> {
 
   const saved = loadSettings();
   void loadLaunchAtStartup(saved === null);
+  void loadPetAlwaysOnTopPreference();
 
   const loadedLocations = await loadCountryCityOptions(saved);
 
@@ -200,6 +203,25 @@ export async function saveLaunchAtStartupPreference(): Promise<boolean> {
   }
 }
 
+export async function savePetAlwaysOnTopPreference(): Promise<boolean> {
+  const previousEnabled = state.petAlwaysOnTopEnabled;
+
+  try {
+    const enabled = await window.hudhud.setPetAlwaysOnTop(
+      petAlwaysOnTop.checked,
+    );
+    state.petAlwaysOnTopEnabled = enabled;
+    petAlwaysOnTop.checked = enabled;
+    return true;
+  } catch (err) {
+    console.error("Failed to update pet always-on-top setting:", err);
+    petAlwaysOnTop.checked = previousEnabled;
+    setState("error");
+    setError("Pet always-on-top could not be updated. Try again.");
+    return false;
+  }
+}
+
 export function exitSettings(): void {
   if (state.previewResult !== null) {
     renderDashboard(state.previewResult);
@@ -294,5 +316,23 @@ function bindPetEvents(): void {
 
   prayerBannerConfirm.addEventListener("click", () => {
     confirmActivePrayer();
+  });
+}
+
+async function loadPetAlwaysOnTopPreference(): Promise<void> {
+  try {
+    const enabled = await window.hudhud.getPetAlwaysOnTop();
+    state.petAlwaysOnTopEnabled = enabled;
+    petAlwaysOnTop.checked = enabled;
+  } catch (err) {
+    console.error("Failed to load pet always-on-top setting:", err);
+    petAlwaysOnTop.checked = state.petAlwaysOnTopEnabled;
+  }
+}
+
+function bindPetAlwaysOnTopSync(): void {
+  window.hudhud.onPetAlwaysOnTopChanged((enabled) => {
+    state.petAlwaysOnTopEnabled = enabled;
+    petAlwaysOnTop.checked = enabled;
   });
 }

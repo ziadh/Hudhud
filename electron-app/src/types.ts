@@ -7,6 +7,16 @@ export interface PetStatus {
   activePrayer?: MainPrayerName;
 }
 
+export interface PetWindowPosition {
+  x: number;
+  y: number;
+}
+
+export interface PetWindowPreferences {
+  alwaysOnTop: boolean;
+  position: PetWindowPosition | null;
+}
+
 export type CalculationMethod =
   | "auto"
   | 0
@@ -53,6 +63,11 @@ export const ipcChannels = {
   confirmPrayer: "pet:confirm-prayer",
   showPetMenu: "pet:show-menu",
   movePetWindow: "pet:move-window",
+  getPetAlwaysOnTop: "pet:get-always-on-top",
+  setPetAlwaysOnTop: "pet:set-always-on-top",
+  petAlwaysOnTopChanged: "pet:always-on-top-changed",
+  getPetWindowPosition: "pet:get-window-position",
+  setPetWindowPosition: "pet:set-window-position",
   showMainWindow: "app:show-main-window",
   getLaunchAtStartup: "app:get-launch-at-startup",
   setLaunchAtStartup: "app:set-launch-at-startup",
@@ -96,6 +111,9 @@ export interface HudhudApi {
   onConfirmPrayer(callback: (prayer: MainPrayerName) => void): () => void;
   showPetMenu(): void;
   movePetWindow(deltaX: number, deltaY: number): void;
+  getPetAlwaysOnTop(): Promise<boolean>;
+  setPetAlwaysOnTop(enabled: boolean): Promise<boolean>;
+  onPetAlwaysOnTopChanged(callback: (enabled: boolean) => void): () => void;
   showMainWindow(): void;
   getLaunchAtStartup(): Promise<boolean>;
   setLaunchAtStartup(enabled: boolean): Promise<boolean>;

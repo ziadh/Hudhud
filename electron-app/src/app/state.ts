@@ -29,6 +29,7 @@ export interface AppStateBag {
   previewRequestId: number;
   currentUpdateState: UpdateState | null;
   settingsPreviewVisible: boolean;
+  petAlwaysOnTopEnabled: boolean;
 }
 
 export const state: AppStateBag = {
@@ -52,6 +53,7 @@ export const state: AppStateBag = {
   previewRequestId: 0,
   currentUpdateState: null,
   settingsPreviewVisible: false,
+  petAlwaysOnTopEnabled: true,
 };
 
 export const confirmedPrayerOccurrences = new Set<string>();

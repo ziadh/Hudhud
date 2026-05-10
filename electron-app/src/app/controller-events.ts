@@ -1,9 +1,5 @@
 import { defaultSettings } from "./constants";
 import {
-  PRAYER_CONFIRM_HINT_SEEN_KEY,
-  SETTINGS_KEY,
-} from "./storage-keys";
-import {
   clearScheduledPreview,
   completeSetupFromPreview,
   exitSettings,
@@ -11,6 +7,7 @@ import {
   markFormDirty,
   renderEmptyPreview,
   saveLaunchAtStartupPreference,
+  savePetAlwaysOnTopPreference,
   schedulePreview,
 } from "./controller";
 import {
@@ -34,6 +31,7 @@ import {
   offsetFajr,
   offsetIsha,
   offsetMaghrib,
+  petAlwaysOnTop,
   previewPane,
   resetAction,
   resetCancelAction,
@@ -58,6 +56,7 @@ import { applyCountrySelection, applyStateSelection } from "./location";
 import { parseSchool, parseSettingsTab } from "./parsers";
 import { clearHappyTimeout } from "./pet-scheduler";
 import { confirmedPrayerOccurrences, state } from "./state";
+import { PRAYER_CONFIRM_HINT_SEEN_KEY, SETTINGS_KEY } from "./storage-keys";
 import {
   applyThemePreference,
   parseThemePreference,
@@ -107,6 +106,8 @@ export function bindEvents(): void {
     resetConfirmDialog.close();
     localStorage.removeItem(SETTINGS_KEY);
     localStorage.removeItem(PRAYER_CONFIRM_HINT_SEEN_KEY);
+    petAlwaysOnTop.checked = true;
+    void savePetAlwaysOnTopPreference();
     state.previewResult = null;
     state.activePrayerResult = null;
     state.happyUntil = null;
@@ -221,6 +222,10 @@ export function bindEvents(): void {
     }
 
     markFormDirty();
+  });
+
+  petAlwaysOnTop.addEventListener("change", () => {
+    void savePetAlwaysOnTopPreference();
   });
 
   previewPane.addEventListener("click", (event) => {
