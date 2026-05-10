@@ -304,6 +304,7 @@
 
     .layout.dashboard {
       grid-template-columns: 1fr;
+      min-height: 0;
     }
 
     .layout.dashboard .form-pane {
@@ -1042,6 +1043,8 @@
     .times-grid {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-auto-rows: max-content;
+      align-items: start;
       gap: 10px;
     }
 
