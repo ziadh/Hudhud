@@ -11,6 +11,8 @@ import {
 
 type FeedbackStatus = "idle" | "error" | "success";
 
+let closeFeedbackTimer: ReturnType<typeof setTimeout> | undefined;
+
 export async function bindFeedbackEvents(): Promise<void> {
   const enabled = await window.hudhud.isFeedbackEnabled();
   if (!enabled) {
@@ -33,6 +35,8 @@ export async function bindFeedbackEvents(): Promise<void> {
 }
 
 async function submitFeedback(): Promise<void> {
+  clearScheduledClose();
+
   const email = feedbackEmail.value.trim();
   const feedback = feedbackMessage.value.trim();
 
@@ -58,8 +62,8 @@ async function submitFeedback(): Promise<void> {
     });
 
     feedbackForm.reset();
-    setStatus("", "idle");
-    setFeedbackPanelOpen(false);
+    setStatus("Thanks, feedback sent.", "success");
+    scheduleFeedbackClose();
   } catch (err) {
     console.error("Failed to send feedback:", err);
     setStatus("Feedback could not be sent. Try again.", "error");
@@ -71,9 +75,29 @@ async function submitFeedback(): Promise<void> {
 function setFeedbackPanelOpen(open: boolean): void {
   feedbackPanel.hidden = !open;
   feedbackToggle.setAttribute("aria-expanded", String(open));
+  if (!open) {
+    clearScheduledClose();
+    setStatus("", "idle");
+  }
   if (open) {
     feedbackEmail.focus();
   }
+}
+
+function scheduleFeedbackClose(): void {
+  clearScheduledClose();
+  closeFeedbackTimer = setTimeout(() => {
+    setFeedbackPanelOpen(false);
+  }, 2000);
+}
+
+function clearScheduledClose(): void {
+  if (closeFeedbackTimer === undefined) {
+    return;
+  }
+
+  clearTimeout(closeFeedbackTimer);
+  closeFeedbackTimer = undefined;
 }
 
 function setSubmitting(submitting: boolean): void {
