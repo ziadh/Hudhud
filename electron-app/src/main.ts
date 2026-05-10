@@ -372,6 +372,13 @@ function applyPetAlwaysOnTop(enabled: boolean): void {
 
 function clampPetBounds(bounds: Electron.Rectangle): Electron.Rectangle {
   const workArea = getNearestDisplayWorkArea(bounds);
+  return clampPetBoundsToWorkArea(bounds, workArea);
+}
+
+function clampPetBoundsToWorkArea(
+  bounds: Electron.Rectangle,
+  workArea: Electron.Rectangle,
+): Electron.Rectangle {
   const maxX = workArea.x + workArea.width - PET_WIDTH;
   const maxY = workArea.y + workArea.height - PET_HEIGHT;
 
@@ -387,6 +394,33 @@ function clampPetBounds(bounds: Electron.Rectangle): Electron.Rectangle {
     width: PET_WIDTH,
     height: PET_HEIGHT,
   };
+}
+
+function getVirtualWorkArea(): Electron.Rectangle {
+  const displays = screen.getAllDisplays();
+  const firstWorkArea =
+    displays[0]?.workArea ?? screen.getPrimaryDisplay().workArea;
+
+  return displays.slice(1).reduce(
+    (area, display) => {
+      const workArea = display.workArea;
+      const left = Math.min(area.x, workArea.x);
+      const top = Math.min(area.y, workArea.y);
+      const right = Math.max(area.x + area.width, workArea.x + workArea.width);
+      const bottom = Math.max(
+        area.y + area.height,
+        workArea.y + workArea.height,
+      );
+
+      return {
+        x: left,
+        y: top,
+        width: right - left,
+        height: bottom - top,
+      };
+    },
+    { ...firstWorkArea },
+  );
 }
 
 function getNearestDisplayWorkArea(
@@ -542,11 +576,15 @@ function movePetWindow(deltaX: number, deltaY: number): void {
   }
 
   const bounds = petWindow.getBounds();
-  const clampedBounds = clampPetBounds({
+  const requestedBounds = {
     ...bounds,
     x: bounds.x + deltaX,
     y: bounds.y + deltaY,
-  });
+  };
+  const clampedBounds = clampPetBoundsToWorkArea(
+    requestedBounds,
+    getVirtualWorkArea(),
+  );
   petWindow.setBounds(clampedBounds, false);
   savePetWindowPosition(clampedBounds);
 }
