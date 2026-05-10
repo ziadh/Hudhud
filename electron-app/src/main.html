@@ -210,6 +210,9 @@
     }
 
     .app-version {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
       align-self: center;
       border: 1px solid var(--line);
       border-radius: 999px;
@@ -223,10 +226,23 @@
       cursor: pointer;
     }
 
+    .app-version::after {
+      content: "›";
+      transform: translateY(-1px);
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 760;
+      line-height: 1;
+    }
+
     .app-version:hover {
       border-color: var(--green-border);
       color: var(--green);
       background: var(--green-soft);
+    }
+
+    .app-version:hover::after {
+      color: var(--green);
     }
 
     .update-action {
@@ -739,13 +755,14 @@
 
     .release-notes-dialog {
       width: min(760px, calc(100vw - 56px));
-      max-height: min(590px, calc(100vh - 56px));
+      height: min(590px, calc(100vh - 56px));
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 0;
       color: var(--text);
       background: var(--panel);
       box-shadow: var(--floating-shadow);
+      overflow: hidden;
     }
 
     .release-notes-dialog::backdrop {
@@ -754,7 +771,8 @@
 
     .release-notes-shell {
       display: grid;
-      max-height: inherit;
+      height: 100%;
+      min-height: 0;
       grid-template-rows: auto 1fr;
     }
 
@@ -790,6 +808,7 @@
     .release-notes-content {
       display: grid;
       gap: 16px;
+      min-height: 0;
       overflow: auto;
       padding: 20px 22px 22px;
     }
