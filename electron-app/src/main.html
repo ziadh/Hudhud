@@ -1042,7 +1042,7 @@
 
     .times-grid {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
       grid-auto-rows: max-content;
       align-items: start;
       gap: 10px;
@@ -1124,6 +1124,7 @@
       margin-top: 8px;
       font-size: 1.22rem;
       font-weight: 760;
+      white-space: nowrap;
     }
 
     .secondary-times {
