@@ -507,34 +507,6 @@
       cursor: pointer;
     }
 
-    .info-option {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 12px;
-      background: var(--surface);
-    }
-
-    .settings-row-action {
-      flex: 0 0 auto;
-      min-height: 34px;
-      border: 1px solid var(--line-strong);
-      border-radius: 6px;
-      padding: 0 12px;
-      color: var(--text);
-      background: var(--surface);
-      font-size: 0.82rem;
-      font-weight: 720;
-      cursor: pointer;
-    }
-
-    .settings-row-action:hover {
-      background: var(--panel-soft);
-    }
-
     .hint {
       color: var(--muted);
       font-size: 0.78rem;
@@ -1398,13 +1370,6 @@
               </span>
             </label>
 
-            <div class="info-option">
-              <span class="toggle-copy">
-                <strong>Release notes</strong>
-                <span class="hint">See the latest releases.</span>
-              </span>
-              <button id="release-notes-action" class="settings-row-action" type="button">View</button>
-            </div>
           </section>
 
           <p id="form-error" class="error"></p>
