@@ -731,8 +731,8 @@
     }
 
     .release-notes-dialog {
-      width: min(720px, calc(100vw - 56px));
-      max-height: min(560px, calc(100vh - 56px));
+      width: min(760px, calc(100vw - 56px));
+      max-height: min(590px, calc(100vh - 56px));
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 0;
@@ -782,9 +782,9 @@
 
     .release-notes-content {
       display: grid;
-      gap: 14px;
+      gap: 16px;
       overflow: auto;
-      padding: 18px 20px 20px;
+      padding: 20px 22px 22px;
     }
 
     .release-notes-status {
@@ -799,35 +799,115 @@
     }
 
     .release-notes-list {
+      position: relative;
       display: grid;
-      gap: 14px;
+      gap: 0;
     }
 
     .release-note {
       display: grid;
+      grid-template-columns: 30px minmax(0, 1fr);
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .release-note-rail {
+      position: relative;
+      display: grid;
+      justify-items: center;
+    }
+
+    .release-note-rail::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--line);
+    }
+
+    .release-note:first-child .release-note-rail::before {
+      top: 13px;
+    }
+
+    .release-note:last-child .release-note-rail::before {
+      bottom: calc(100% - 13px);
+    }
+
+    .release-note-marker {
+      position: relative;
+      z-index: 1;
+      width: 14px;
+      height: 14px;
+      margin-top: 7px;
+      border: 2px solid var(--line-strong);
+      border-radius: 999px;
+      background: var(--panel);
+      box-shadow: 0 0 0 4px var(--panel);
+    }
+
+    .release-note-content {
+      display: grid;
       gap: 10px;
+      min-width: 0;
+      margin-bottom: 16px;
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 14px;
       background: var(--surface);
     }
 
+    .release-note.current .release-note-content {
+      border-color: var(--green-border);
+      background: var(--green-soft);
+    }
+
+    .release-note.current .release-note-marker {
+      border-color: var(--green);
+      background: var(--green);
+      box-shadow:
+        0 0 0 4px var(--panel),
+        0 0 0 7px var(--green-soft);
+    }
+
     .release-note-header {
       display: flex;
-      align-items: baseline;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 12px;
+    }
+
+    .release-note-title {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
     }
 
     .release-note-header h3 {
       font-size: 0.95rem;
     }
 
-    .release-note-header span {
+    .release-note-header > span {
       flex: 0 0 auto;
       color: var(--muted);
       font-size: 0.76rem;
       font-weight: 640;
+    }
+
+    .release-note-current {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      border: 1px solid var(--green-border);
+      border-radius: 999px;
+      padding: 0 8px;
+      color: var(--green);
+      background: var(--surface);
+      font-size: 0.7rem;
+      font-weight: 760;
+      white-space: nowrap;
     }
 
     .release-note-body {
