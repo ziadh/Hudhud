@@ -13,6 +13,8 @@ import { parseTimingDate } from "./parsers";
 import { state } from "./state";
 import type { PrayerName, PrayerResult, PrayerTimings } from "./types";
 
+type MainPrayerName = (typeof MAIN_PRAYERS)[number];
+
 export function renderEmptyPreviewHtml(): void {
   const message =
     state.formMode === "settings"
@@ -50,6 +52,7 @@ function renderTimes(
   includeDashboardActions = false,
 ): string {
   const nextPrayer = getNextPrayer(result.timings, result.timezone);
+  const nextPrayerName = getNextPrayerName(nextPrayer.label);
   const actions = includeDashboardActions
     ? `
       <div class="actions">
@@ -81,23 +84,24 @@ function renderTimes(
       ${actions}
     </div>
 
-    <section class="next-prayer" data-next-prayer-at="${escapeHtml(nextPrayer.target)}">
-      <div>
-        <div class="next-label">Next prayer</div>
-        <div class="next-value">${escapeHtml(nextPrayer.label)}</div>
-        <div class="method-line">${escapeHtml(nextPrayer.time)}</div>
-      </div>
-      <div class="time-remaining" aria-label="${escapeHtml(nextPrayer.remaining)}">${renderCountdown(nextPrayer.remaining)}</div>
-    </section>
-
     <section class="times-grid">
       ${MAIN_PRAYERS.map(
-        (name) => `
-          <div class="time-cell">
-            ${renderTimeHeader(name)}
-            <div class="time-value">${escapeHtml(formatTime(result.timings[name], result.timezone))}</div>
-          </div>
-        `,
+        (name) => {
+          const isNextPrayer = name === nextPrayerName;
+          return `
+            <div class="time-cell${isNextPrayer ? " next-time" : ""}"${isNextPrayer ? ` data-next-prayer-at="${escapeHtml(nextPrayer.target)}"` : ""}>
+              <div class="time-cell-main">
+                ${renderTimeHeader(name, isNextPrayer)}
+                <div class="time-value">${escapeHtml(formatTime(result.timings[name], result.timezone))}</div>
+              </div>
+              ${
+                isNextPrayer
+                  ? `<div class="time-remaining" aria-label="${escapeHtml(nextPrayer.remaining)}">${renderCountdown(nextPrayer.remaining)}</div>`
+                  : ""
+              }
+            </div>
+          `;
+        },
       ).join("")}
     </section>
 
@@ -119,13 +123,21 @@ function renderTimes(
   `;
 }
 
-function renderTimeHeader(name: PrayerName): string {
+function renderTimeHeader(name: PrayerName, isNextPrayer = false): string {
   return `
     <div class="time-header">
       ${renderPrayerIcon(name)}
       <div class="time-name">${name}</div>
+      ${isNextPrayer ? `<div class="next-pill">Next</div>` : ""}
     </div>
   `;
+}
+
+function getNextPrayerName(label: string): MainPrayerName {
+  const prayerName = label.replace(" tomorrow", "");
+  return MAIN_PRAYERS.includes(prayerName as MainPrayerName)
+    ? (prayerName as MainPrayerName)
+    : "Fajr";
 }
 
 function renderPrayerIcon(name: PrayerName): string {
