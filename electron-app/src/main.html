@@ -765,6 +765,38 @@
       font-size: 1.04rem;
     }
 
+    .release-notes-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .release-notes-github {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 32px;
+      padding: 0 9px;
+      border-radius: 999px;
+      color: var(--muted);
+      background: transparent;
+      font-size: 0.8rem;
+      font-weight: 640;
+      cursor: pointer;
+    }
+
+    .release-notes-github svg {
+      width: 13px;
+      height: 13px;
+      stroke-width: 2.3;
+    }
+
+    .release-notes-github:hover {
+      color: var(--text);
+      background: var(--panel-soft);
+    }
+
     .release-notes-close {
       display: inline-grid;
       place-items: center;
@@ -1455,8 +1487,19 @@
         <div>
           <h2 id="release-notes-title">Release notes</h2>
         </div>
-        <button id="release-notes-close" class="release-notes-close" type="button"
-          aria-label="Close release notes">&times;</button>
+        <div class="release-notes-header-actions">
+          <button id="release-notes-github" class="release-notes-github" type="button"
+            aria-label="Open GitHub repository in browser" title="Open GitHub repository in browser">
+            GitHub
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M7 17 17 7" />
+              <path d="M9 7h8v8" />
+            </svg>
+          </button>
+          <button id="release-notes-close" class="release-notes-close" type="button"
+            aria-label="Close release notes">&times;</button>
+        </div>
       </div>
       <div class="release-notes-content">
         <p id="release-notes-status" class="release-notes-status" aria-live="polite"></p>

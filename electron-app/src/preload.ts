@@ -109,6 +109,9 @@ const api: HudhudApi = {
       ReleaseNote[]
     >;
   },
+  openGithubRepo() {
+    ipcRenderer.send(channels.openGithubRepo);
+  },
   onUpdateState(callback) {
     const listener = (
       _event: Electron.IpcRendererEvent,

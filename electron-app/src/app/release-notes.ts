@@ -3,6 +3,7 @@ import {
   appVersion,
   releaseNotesClose,
   releaseNotesDialog,
+  releaseNotesGithub,
   releaseNotesList,
   releaseNotesStatus,
 } from "./dom";
@@ -32,6 +33,10 @@ export function bindReleaseNotesEvents(): void {
 
   releaseNotesClose.addEventListener("click", () => {
     releaseNotesDialog.close();
+  });
+
+  releaseNotesGithub.addEventListener("click", () => {
+    window.hudhud.openGithubRepo();
   });
 
   releaseNotesDialog.addEventListener("click", (event) => {

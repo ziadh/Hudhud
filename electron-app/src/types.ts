@@ -79,6 +79,7 @@ export const ipcChannels = {
   sendFeedback: "app:send-feedback",
   feedbackEnabled: "app:feedback-enabled",
   getReleaseNotes: "app:get-release-notes",
+  openGithubRepo: "app:open-github-repo",
 } as const;
 
 export type IpcChannel = (typeof ipcChannels)[keyof typeof ipcChannels];
@@ -134,6 +135,7 @@ export interface HudhudApi {
   sendFeedback(input: FeedbackInput): Promise<void>;
   isFeedbackEnabled(): Promise<boolean>;
   getReleaseNotes(): Promise<ReleaseNote[]>;
+  openGithubRepo(): void;
 }
 
 declare global {

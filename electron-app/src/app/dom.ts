@@ -83,6 +83,9 @@ export const releaseNotesDialog = query<HTMLDialogElement>(
 export const releaseNotesClose = query<HTMLButtonElement>(
   "#release-notes-close",
 );
+export const releaseNotesGithub = query<HTMLButtonElement>(
+  "#release-notes-github",
+);
 export const releaseNotesStatus = query<HTMLElement>("#release-notes-status");
 export const releaseNotesList = query<HTMLElement>("#release-notes-list");
 export const schoolButtons = Array.from(

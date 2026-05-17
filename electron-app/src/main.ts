@@ -6,6 +6,7 @@ import {
   Menu,
   nativeImage,
   screen,
+  shell,
   Tray,
 } from "electron";
 import { PET_ONBOARDING_BUBBLE } from "./app/constants";
@@ -34,6 +35,7 @@ const FEEDBACK_WEBHOOK_URL =
   "https://n8n.ziadhussein.com/webhook/feedback";
 const GITHUB_RELEASES_API_URL =
   "https://api.github.com/repos/ziadh/Hudhud/releases";
+const GITHUB_REPO_URL = "https://github.com/ziadh/HudHud";
 const RELEASE_NOTES_LIMIT = 8;
 
 let mainWindow: BrowserWindow | null = null;
@@ -643,6 +645,9 @@ if (!app.requestSingleInstanceLock()) {
     );
     ipcMain.handle(channels.feedbackEnabled, () => FEEDBACK_WEBHOOK_URL !== "");
     ipcMain.handle(channels.getReleaseNotes, () => getReleaseNotes());
+    ipcMain.on(channels.openGithubRepo, () => {
+      void shell.openExternal(GITHUB_REPO_URL);
+    });
 
     mainWindow = createMainWindow();
     petWindow = createPetWindow();
