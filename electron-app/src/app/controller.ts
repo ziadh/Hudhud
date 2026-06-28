@@ -1,5 +1,6 @@
-import type { PrayerSettings } from "../types";
+import type { AppDestination, PrayerSettings } from "../types";
 import { fetchPrayerTimes } from "./api";
+import { bindAzkarEvents, renderAzkar, setAzkarPeriod } from "./azkar";
 import { defaultSettings } from "./constants";
 import { bindEvents } from "./controller-events";
 import {
@@ -7,6 +8,7 @@ import {
   isPrimaryActionDisabled,
   setError,
   setFormMode,
+  setMainTab,
   setState,
   setStep,
 } from "./controller-state";
@@ -59,12 +61,16 @@ export async function init(): Promise<void> {
   applyEnvironmentMarkers();
   populateMethods();
   bindEvents();
+  bindAzkarEvents();
   void bindFeedbackEvents();
   bindPetEvents();
+  bindDestinationEvents();
   bindPetAlwaysOnTopSync();
   bindUpdateEvents();
   bindReleaseNotesEvents();
   setRolloverHandler(handleNextPrayerRollover);
+  setMainTab("prayer");
+  renderAzkar();
   startPetScheduler();
   setState("loading");
 
@@ -93,6 +99,19 @@ export async function init(): Promise<void> {
   setFormMode("settings");
   setStep("calculation");
   void fetchAndRender(saved, "configured");
+}
+
+function bindDestinationEvents(): void {
+  window.hudhud.onOpenDestination((destination) => {
+    openDestination(destination);
+  });
+}
+
+function openDestination(destination: AppDestination): void {
+  setMainTab(destination.tab);
+  if (destination.tab === "azkar" && destination.period !== undefined) {
+    setAzkarPeriod(destination.period);
+  }
 }
 
 export async function fetchAndRender(
@@ -305,6 +324,10 @@ function applyEnvironmentMarkers(): void {
 function bindPetEvents(): void {
   window.hudhud.onConfirmPrayer((prayer) => {
     confirmCurrentPrayer(prayer);
+  });
+
+  window.addEventListener("azkar:progress-changed", () => {
+    updatePetScheduler();
   });
 
   setPetStatusCallback((status) => {

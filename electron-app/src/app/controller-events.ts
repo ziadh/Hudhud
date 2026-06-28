@@ -1,3 +1,4 @@
+import { showAzkarHome } from "./azkar";
 import { defaultSettings } from "./constants";
 import {
   clearScheduledPreview,
@@ -13,6 +14,7 @@ import {
 import {
   setError,
   setFormMode,
+  setMainTab,
   setSettingsTab,
   setState,
   setStep,
@@ -25,6 +27,7 @@ import {
   form,
   latitudeSelect,
   launchAtStartup,
+  mainTabButtons,
   methodSelect,
   offsetAsr,
   offsetDhuhr,
@@ -56,7 +59,11 @@ import { applyCountrySelection, applyStateSelection } from "./location";
 import { parseSchool, parseSettingsTab } from "./parsers";
 import { clearHappyTimeout } from "./pet-scheduler";
 import { confirmedPrayerOccurrences, state } from "./state";
-import { PRAYER_CONFIRM_HINT_SEEN_KEY, SETTINGS_KEY } from "./storage-keys";
+import {
+  AZKAR_PROGRESS_KEY,
+  PRAYER_CONFIRM_HINT_SEEN_KEY,
+  SETTINGS_KEY,
+} from "./storage-keys";
 import {
   applyThemePreference,
   parseThemePreference,
@@ -106,6 +113,7 @@ export function bindEvents(): void {
     resetConfirmDialog.close();
     localStorage.removeItem(SETTINGS_KEY);
     localStorage.removeItem(PRAYER_CONFIRM_HINT_SEEN_KEY);
+    localStorage.removeItem(AZKAR_PROGRESS_KEY);
     petAlwaysOnTop.checked = true;
     void savePetAlwaysOnTopPreference();
     state.previewResult = null;
@@ -184,6 +192,17 @@ export function bindEvents(): void {
       const tab = parseSettingsTab(button.dataset.settingsTab ?? "");
       if (tab !== null) {
         setSettingsTab(tab);
+      }
+    });
+  }
+
+  for (const button of mainTabButtons) {
+    button.addEventListener("click", () => {
+      if (button.dataset.mainTab === "prayer") {
+        setMainTab("prayer");
+      } else if (button.dataset.mainTab === "azkar") {
+        setMainTab("azkar");
+        showAzkarHome();
       }
     });
   }

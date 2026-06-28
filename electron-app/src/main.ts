@@ -11,6 +11,8 @@ import {
 } from "electron";
 import { PET_ONBOARDING_BUBBLE } from "./app/constants";
 import {
+  type AppDestination,
+  type AzkarPeriod,
   ipcChannels as channels,
   type FeedbackInput,
   type MainPrayerName,
@@ -48,6 +50,7 @@ let currentPetStatus: PetStatus = {
   animation: "idle",
   bubbleText: PET_ONBOARDING_BUBBLE,
 };
+let pendingDestination: AppDestination | null = null;
 let releaseNotesCache: ReleaseNote[] | null = null;
 
 function fromDist(fileName: string): string {
@@ -252,6 +255,7 @@ function createMainWindow(): BrowserWindow {
     if (!isStartupLaunch()) {
       window.show();
     }
+    flushPendingDestination();
   });
   window.on("close", (event) => {
     if (isQuitting) {
@@ -268,7 +272,11 @@ function createMainWindow(): BrowserWindow {
   return window;
 }
 
-function showMainWindow(): void {
+function showMainWindow(destination?: AppDestination): void {
+  if (destination !== undefined) {
+    pendingDestination = destination;
+  }
+
   if (mainWindow === null || mainWindow.isDestroyed()) {
     mainWindow = createMainWindow();
     void updateManager?.checkForUpdates();
@@ -281,7 +289,22 @@ function showMainWindow(): void {
 
   mainWindow.show();
   mainWindow.focus();
+  flushPendingDestination();
   void updateManager?.checkForUpdates();
+}
+
+function flushPendingDestination(): void {
+  if (
+    pendingDestination === null ||
+    mainWindow === null ||
+    mainWindow.isDestroyed() ||
+    mainWindow.webContents.isLoading()
+  ) {
+    return;
+  }
+
+  mainWindow.webContents.send(channels.openDestination, pendingDestination);
+  pendingDestination = null;
 }
 
 function createTray(): Tray {
@@ -291,7 +314,9 @@ function createTray(): Tray {
   const menu = Menu.buildFromTemplate([
     {
       label: "Open Hudhud",
-      click: showMainWindow,
+      click: (): void => {
+        showMainWindow();
+      },
     },
     { type: "separator" as const },
     {
@@ -305,7 +330,9 @@ function createTray(): Tray {
 
   appTray.setToolTip("Hudhud");
   appTray.setContextMenu(menu);
-  appTray.on("click", showMainWindow);
+  appTray.on("click", () => {
+    showMainWindow();
+  });
 
   return appTray;
 }
@@ -535,6 +562,20 @@ function showPetContextMenu(): void {
           { type: "separator" as const },
         ]
       : []),
+    ...(currentPetStatus.activeAzkar !== undefined
+      ? [
+          {
+            label: `Open ${getAzkarLabel(currentPetStatus.activeAzkar)} azkar`,
+            click: (): void => {
+              showMainWindow({
+                tab: "azkar",
+                period: currentPetStatus.activeAzkar,
+              });
+            },
+          },
+          { type: "separator" as const },
+        ]
+      : []),
     {
       label: "Open Hudhud",
       click: (): void => {
@@ -552,6 +593,10 @@ function showPetContextMenu(): void {
   ]);
 
   menu.popup({ window: petWindow });
+}
+
+function getAzkarLabel(period: AzkarPeriod): string {
+  return period === "morning" ? "morning" : "evening";
 }
 
 function confirmPrayer(prayer: MainPrayerName | undefined): void {
@@ -612,7 +657,12 @@ if (!app.requestSingleInstanceLock()) {
     );
 
     ipcMain.on(channels.showPetMenu, showPetContextMenu);
-    ipcMain.on(channels.showMainWindow, showMainWindow);
+    ipcMain.on(
+      channels.showMainWindow,
+      (_event, destination?: AppDestination) => {
+        showMainWindow(destination);
+      },
+    );
     ipcMain.on(channels.updatePetStatus, (_event, status: PetStatus) => {
       updatePetStatus(status);
     });

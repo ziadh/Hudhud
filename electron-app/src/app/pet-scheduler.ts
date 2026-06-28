@@ -1,11 +1,5 @@
 import type { MainPrayerName, PetStatus } from "../types";
-
-type PetStatusCallback = (status: PetStatus) => void;
-let petStatusCallback: PetStatusCallback | null = null;
-
-export function setPetStatusCallback(cb: PetStatusCallback): void {
-  petStatusCallback = cb;
-}
+import { isAzkarComplete } from "./azkar";
 import {
   MAIN_PRAYERS,
   PET_ALERT_WINDOW_MS,
@@ -15,10 +9,22 @@ import {
   PET_PRAYER_ON_TIME_WINDOW_MS,
   PET_SCHEDULER_INTERVAL_MS,
 } from "./constants";
-import { PRAYER_CONFIRM_HINT_SEEN_KEY } from "./storage-keys";
 import { parseTimingDate } from "./parsers";
 import { confirmedPrayerOccurrences, state } from "./state";
-import type { PetDecision, PrayerOccurrence, PrayerResult } from "./types";
+import { PRAYER_CONFIRM_HINT_SEEN_KEY } from "./storage-keys";
+import type {
+  AzkarPeriod,
+  PetDecision,
+  PrayerOccurrence,
+  PrayerResult,
+} from "./types";
+
+type PetStatusCallback = (status: PetStatus) => void;
+let petStatusCallback: PetStatusCallback | null = null;
+
+export function setPetStatusCallback(cb: PetStatusCallback): void {
+  petStatusCallback = cb;
+}
 
 export function startPetScheduler(): void {
   updatePetScheduler();
@@ -194,19 +200,6 @@ function getPetDecision(now = new Date()): PetDecision {
     }
   }
 
-  const sleepWindow = getSleepWindow(schedule, nowMs);
-  if (
-    sleepWindow !== null &&
-    nowMs >= sleepWindow.startsAt.getTime() &&
-    nowMs < sleepWindow.endsAt.getTime()
-  ) {
-    return {
-      status: { animation: "sleep" },
-      activeOccurrenceKey: null,
-      activePrayerStartedAtMs: null,
-    };
-  }
-
   const alertOccurrence = schedule.find((occurrence) => {
     const prayerMs = occurrence.date.getTime();
     return nowMs >= prayerMs - PET_ALERT_WINDOW_MS && nowMs < prayerMs;
@@ -220,11 +213,86 @@ function getPetDecision(now = new Date()): PetDecision {
     };
   }
 
+  const activeAzkar = getActiveAzkarPeriod(schedule, nowMs);
+  if (activeAzkar !== null) {
+    return {
+      status: {
+        animation: "alert",
+        activeAzkar,
+        bubbleText: `${getAzkarLabel(activeAzkar)} azkar`,
+      },
+      activeOccurrenceKey: null,
+      activePrayerStartedAtMs: null,
+    };
+  }
+
+  const sleepWindow = getSleepWindow(schedule, nowMs);
+  if (
+    sleepWindow !== null &&
+    nowMs >= sleepWindow.startsAt.getTime() &&
+    nowMs < sleepWindow.endsAt.getTime()
+  ) {
+    return {
+      status: { animation: "sleep" },
+      activeOccurrenceKey: null,
+      activePrayerStartedAtMs: null,
+    };
+  }
+
   return {
     status: { animation: "idle" },
     activeOccurrenceKey: null,
     activePrayerStartedAtMs: null,
   };
+}
+
+function getActiveAzkarPeriod(
+  schedule: PrayerOccurrence[],
+  nowMs: number,
+): AzkarPeriod | null {
+  const todayFajr = findTodayPrayer(schedule, "Fajr", nowMs);
+  const todayAsr = findTodayPrayer(schedule, "Asr", nowMs);
+
+  if (
+    todayAsr !== null &&
+    nowMs >= todayAsr.date.getTime() &&
+    !isAzkarComplete("evening")
+  ) {
+    return "evening";
+  }
+
+  if (
+    todayFajr !== null &&
+    nowMs >= todayFajr.date.getTime() &&
+    !isAzkarComplete("morning")
+  ) {
+    return "morning";
+  }
+
+  return null;
+}
+
+function findTodayPrayer(
+  schedule: PrayerOccurrence[],
+  prayer: MainPrayerName,
+  nowMs: number,
+): PrayerOccurrence | null {
+  const now = new Date(nowMs);
+  const dateKey = getDateKey(now);
+  return (
+    schedule.find(
+      (occurrence) =>
+        occurrence.prayer === prayer && getDateKey(occurrence.date) === dateKey,
+    ) ?? null
+  );
+}
+
+function getDateKey(date: Date): string {
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+}
+
+function getAzkarLabel(period: AzkarPeriod): string {
+  return period === "morning" ? "Morning" : "Evening";
 }
 
 function buildPrayerSchedule(result: PrayerResult): PrayerOccurrence[] {

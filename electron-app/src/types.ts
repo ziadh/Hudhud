@@ -1,10 +1,18 @@
 export type AnimationState = "idle" | "alert" | "sleep" | "prayer" | "happy";
 export type MainPrayerName = "Fajr" | "Dhuhr" | "Asr" | "Maghrib" | "Isha";
+export type MainTab = "prayer" | "azkar";
+export type AzkarPeriod = "morning" | "evening";
+
+export interface AppDestination {
+  tab: MainTab;
+  period?: AzkarPeriod;
+}
 
 export interface PetStatus {
   animation: AnimationState;
   bubbleText?: string;
   activePrayer?: MainPrayerName;
+  activeAzkar?: AzkarPeriod;
 }
 
 export interface PetWindowPosition {
@@ -69,6 +77,7 @@ export const ipcChannels = {
   getPetWindowPosition: "pet:get-window-position",
   setPetWindowPosition: "pet:set-window-position",
   showMainWindow: "app:show-main-window",
+  openDestination: "app:open-destination",
   getLaunchAtStartup: "app:get-launch-at-startup",
   setLaunchAtStartup: "app:set-launch-at-startup",
   updateState: "updates:state",
@@ -124,7 +133,10 @@ export interface HudhudApi {
   getPetAlwaysOnTop(): Promise<boolean>;
   setPetAlwaysOnTop(enabled: boolean): Promise<boolean>;
   onPetAlwaysOnTopChanged(callback: (enabled: boolean) => void): () => void;
-  showMainWindow(): void;
+  showMainWindow(destination?: AppDestination): void;
+  onOpenDestination(
+    callback: (destination: AppDestination) => void,
+  ): () => void;
   getLaunchAtStartup(): Promise<boolean>;
   setLaunchAtStartup(enabled: boolean): Promise<boolean>;
   getUpdateState(): Promise<UpdateState>;

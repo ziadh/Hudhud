@@ -1,4 +1,5 @@
 import {
+  azkarTabPanel,
   backAction,
   calculationStep,
   calculationStepChip,
@@ -10,6 +11,9 @@ import {
   layout,
   locationStep,
   locationStepChip,
+  mainTabButtons,
+  mainTabs,
+  prayerTabPanel,
   primaryAction,
   resetAction,
   settingsBackAction,
@@ -20,7 +24,26 @@ import {
 } from "./dom";
 import { parseSettingsTab } from "./parsers";
 import { state } from "./state";
-import type { AppState, FormMode, SettingsTab, SetupStep } from "./types";
+import type {
+  AppState,
+  FormMode,
+  MainTab,
+  SettingsTab,
+  SetupStep,
+} from "./types";
+
+export function setMainTab(tab: MainTab): void {
+  state.currentMainTab = tab;
+  prayerTabPanel.hidden = tab !== "prayer";
+  azkarTabPanel.hidden = tab !== "azkar";
+
+  for (const button of mainTabButtons) {
+    const isActive = button.dataset.mainTab === tab;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-selected", String(isActive));
+    button.tabIndex = isActive ? 0 : -1;
+  }
+}
 
 export function setState(next: AppState): void {
   state.currentState = next;
@@ -51,6 +74,7 @@ export function setFormMode(mode: FormMode): void {
   resetAction.hidden = mode !== "settings";
   primaryAction.hidden = mode === "settings";
   settingsTabs.hidden = mode !== "settings";
+  mainTabs.hidden = mode === "onboarding";
   updateSettingsPreviewVisibility();
   if (mode === "settings") {
     setSettingsTab(state.currentSettingsTab);

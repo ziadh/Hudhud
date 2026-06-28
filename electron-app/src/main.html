@@ -302,6 +302,35 @@
       box-shadow: var(--shadow);
     }
 
+    .main-tabs {
+      display: inline-grid;
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
+      gap: 6px;
+      margin-bottom: 16px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-soft);
+    }
+
+    .main-tab {
+      min-height: 38px;
+      border-radius: 6px;
+      color: var(--muted);
+      background: transparent;
+      font-weight: 720;
+      cursor: pointer;
+    }
+
+    .main-tab.active {
+      color: var(--on-accent);
+      background: var(--green);
+    }
+
+    .tab-panel[hidden] {
+      display: none;
+    }
+
     .layout.dashboard {
       grid-template-columns: 1fr;
       min-height: 0;
@@ -1180,6 +1209,168 @@
       line-height: 1.55;
     }
 
+    .azkar-shell {
+      display: grid;
+      gap: 22px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 28px;
+      background: var(--preview-overlay), var(--preview-bg);
+      box-shadow: var(--shadow);
+    }
+
+    .azkar-toolbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .azkar-toolbar h2,
+    .azkar-summary h2 {
+      font-size: 1.35rem;
+      line-height: 1.2;
+    }
+
+    .azkar-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .azkar-home-cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .azkar-period-card {
+      display: grid;
+      gap: 12px;
+      min-height: 170px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      color: var(--text);
+      background: var(--surface);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .azkar-period-card:hover {
+      border-color: var(--green-border);
+      background: var(--green-soft);
+    }
+
+    .azkar-period-card h3 {
+      font-size: 1.25rem;
+    }
+
+    .azkar-period-card p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .azkar-period-card strong {
+      align-self: end;
+      color: var(--green);
+      font-size: 1.1rem;
+    }
+
+    .azkar-summary {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .azkar-summary strong {
+      color: var(--green);
+      font-size: 1.2rem;
+      font-weight: 780;
+    }
+
+    .azkar-progress {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--green-progress);
+    }
+
+    .azkar-progress span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--green);
+    }
+
+    .azkar-complete {
+      border: 1px solid var(--green-border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--green);
+      background: var(--green-soft);
+      font-weight: 700;
+    }
+
+    .azkar-cards {
+      display: grid;
+      gap: 12px;
+    }
+
+    .azkar-card {
+      display: grid;
+      gap: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: var(--surface);
+    }
+
+    .azkar-card.complete {
+      border-color: var(--green-border);
+      background: var(--green-soft);
+    }
+
+    .azkar-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 760;
+      text-transform: uppercase;
+    }
+
+    .azkar-arabic {
+      color: var(--text);
+      font-family: "Geeza Pro", "Noto Naskh Arabic", "Traditional Arabic", serif;
+      font-size: 1.48rem;
+      line-height: 2.05;
+    }
+
+    .azkar-counter {
+      justify-self: start;
+      min-width: 110px;
+    }
+
+    .azkar-back {
+      display: inline-flex;
+      align-items: center;
+      justify-self: start;
+      min-height: 34px;
+      margin-bottom: 4px;
+      padding: 0 12px;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      color: var(--text);
+      background: var(--surface);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
     @media (max-width: 820px) {
       .app {
         width: min(100% - 28px, 680px);
@@ -1199,6 +1390,18 @@
       }
 
       .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .main-tabs {
+        width: 100%;
+      }
+
+      .azkar-toolbar {
+        flex-direction: column;
+      }
+
+      .azkar-home-cards {
         grid-template-columns: 1fr;
       }
 
@@ -1320,155 +1523,177 @@
       </div>
     </header>
 
-    <div id="prayer-banner" class="prayer-banner" hidden>
-      <p id="prayer-banner-text" class="prayer-banner-text"></p>
-      <button id="prayer-banner-confirm" class="prayer-banner-confirm" type="button">I prayed</button>
-    </div>
+    <nav class="main-tabs" role="tablist" aria-label="Hudhud sections">
+      <button class="main-tab active" type="button" role="tab" aria-controls="prayer-tab-panel" aria-selected="true"
+        data-main-tab="prayer">Prayer</button>
+      <button class="main-tab" type="button" role="tab" aria-controls="azkar-tab-panel" aria-selected="false"
+        data-main-tab="azkar">Azkar</button>
+    </nav>
 
-    <section class="layout" aria-live="polite">
-      <form id="settings-form" class="form-pane" novalidate>
-        <div class="section-title">
-          <button id="settings-back-action" class="settings-back-action" type="button" aria-label="Back to prayer times"
-            title="Back to prayer times" hidden>
-            <svg aria-hidden="true" viewBox="0 0 24 24">
-              <path d="M19 12H5"></path>
-              <path d="m12 19-7-7 7-7"></path>
-            </svg>
-          </button>
-          <h2 id="form-title">Prayer Times Setup</h2>
-        </div>
+    <section id="prayer-tab-panel" class="tab-panel">
+      <div id="prayer-banner" class="prayer-banner" hidden>
+        <p id="prayer-banner-text" class="prayer-banner-text"></p>
+        <button id="prayer-banner-confirm" class="prayer-banner-confirm" type="button">I prayed</button>
+      </div>
 
-        <div class="stepper" aria-label="Setup steps">
-          <span id="location-step-chip" class="step-chip active">1. Location</span>
-          <span id="calculation-step-chip" class="step-chip">2. Calculation</span>
-        </div>
+      <section class="layout" aria-live="polite">
+        <form id="settings-form" class="form-pane" novalidate>
+          <div class="section-title">
+            <button id="settings-back-action" class="settings-back-action" type="button"
+              aria-label="Back to prayer times" title="Back to prayer times" hidden>
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M19 12H5"></path>
+                <path d="m12 19-7-7 7-7"></path>
+              </svg>
+            </button>
+            <h2 id="form-title">Prayer Times Setup</h2>
+          </div>
 
-        <div class="settings-tabs" role="tablist" aria-label="Settings sections" hidden>
-          <button id="settings-tab-general" class="settings-tab active" type="button" role="tab"
-            aria-controls="general-step" data-settings-tab="general">General</button>
-          <button id="settings-tab-location" class="settings-tab" type="button" role="tab" aria-controls="location-step"
-            data-settings-tab="location">Location</button>
-          <button id="settings-tab-calculation" class="settings-tab" type="button" role="tab"
-            aria-controls="calculation-step" data-settings-tab="calculation">Calculation</button>
-        </div>
+          <div class="stepper" aria-label="Setup steps">
+            <span id="location-step-chip" class="step-chip active">1. Location</span>
+            <span id="calculation-step-chip" class="step-chip">2. Calculation</span>
+          </div>
 
-        <label id="settings-preview-toggle-row" class="toggle-option settings-preview-toggle" hidden>
-          <span class="toggle-copy">
-            <strong>Show preview</strong>
-            <span class="hint">Compare prayer times before returning to the dashboard.</span>
-          </span>
-          <input id="settings-preview-toggle" type="checkbox" />
-        </label>
+          <div class="settings-tabs" role="tablist" aria-label="Settings sections" hidden>
+            <button id="settings-tab-general" class="settings-tab active" type="button" role="tab"
+              aria-controls="general-step" data-settings-tab="general">General</button>
+            <button id="settings-tab-location" class="settings-tab" type="button" role="tab"
+              aria-controls="location-step" data-settings-tab="location">Location</button>
+            <button id="settings-tab-calculation" class="settings-tab" type="button" role="tab"
+              aria-controls="calculation-step" data-settings-tab="calculation">Calculation</button>
+          </div>
 
-        <div class="form-grid">
-          <section id="location-step" class="step-panel active">
-            <label>
-              Country
-              <input id="country-select" name="country" list="country-options" autocomplete="country-name" required
-                placeholder="Loading countries..." />
-              <datalist id="country-options"></datalist>
-            </label>
+          <label id="settings-preview-toggle-row" class="toggle-option settings-preview-toggle" hidden>
+            <span class="toggle-copy">
+              <strong>Show preview</strong>
+              <span class="hint">Compare prayer times before returning to the dashboard.</span>
+            </span>
+            <input id="settings-preview-toggle" type="checkbox" />
+          </label>
 
-            <label id="state-field" hidden>
-              State / Province
-              <input id="state-select" name="state" list="state-options" autocomplete="address-level1"
-                placeholder="Choose a country first" />
-              <datalist id="state-options"></datalist>
-            </label>
+          <div class="form-grid">
+            <section id="location-step" class="step-panel active">
+              <label>
+                Country
+                <input id="country-select" name="country" list="country-options" autocomplete="country-name" required
+                  placeholder="Loading countries..." />
+                <datalist id="country-options"></datalist>
+              </label>
 
-            <label id="city-field" hidden>
-              City
-              <input id="city-select" name="city" list="city-options" autocomplete="address-level2" required disabled
-                placeholder="Choose a country first" />
-              <datalist id="city-options"></datalist>
-              <span id="city-hint" class="hint">Cities appear after you choose a country.</span>
-            </label>
-          </section>
+              <label id="state-field" hidden>
+                State / Province
+                <input id="state-select" name="state" list="state-options" autocomplete="address-level1"
+                  placeholder="Choose a country first" />
+                <datalist id="state-options"></datalist>
+              </label>
 
-          <section id="calculation-step" class="step-panel">
-            <label>
-              Calculation method
-              <input id="method-select" name="method" list="method-options" autocomplete="off" />
-              <datalist id="method-options"></datalist>
-            </label>
+              <label id="city-field" hidden>
+                City
+                <input id="city-select" name="city" list="city-options" autocomplete="address-level2" required disabled
+                  placeholder="Choose a country first" />
+                <datalist id="city-options"></datalist>
+                <span id="city-hint" class="hint">Cities appear after you choose a country.</span>
+              </label>
+            </section>
 
-            <label>
-              Asr school
-              <span class="segmented" role="group" aria-label="Asr school">
-                <button class="segment active" type="button" data-school="0">Standard</button>
-                <button class="segment" type="button" data-school="1">Hanafi</button>
-              </span>
-            </label>
+            <section id="calculation-step" class="step-panel">
+              <label>
+                Calculation method
+                <input id="method-select" name="method" list="method-options" autocomplete="off" />
+                <datalist id="method-options"></datalist>
+              </label>
 
-            <details>
-              <summary>Advanced calculation settings</summary>
-              <div class="advanced-grid">
-                <label>
-                  High latitude
-                  <input id="latitude-select" name="latitudeAdjustmentMethod" list="latitude-options"
-                    autocomplete="off" />
-                  <datalist id="latitude-options"></datalist>
-                </label>
+              <label>
+                Asr school
+                <span class="segmented" role="group" aria-label="Asr school">
+                  <button class="segment active" type="button" data-school="0">Standard</button>
+                  <button class="segment" type="button" data-school="1">Hanafi</button>
+                </span>
+              </label>
 
-                <label>
-                  Shafaq
-                  <input id="shafaq-select" name="shafaq" list="shafaq-options" autocomplete="off" disabled />
-                  <datalist id="shafaq-options"></datalist>
-                  <span class="hint">Used only with Moonsighting Committee.</span>
-                </label>
+              <details>
+                <summary>Advanced calculation settings</summary>
+                <div class="advanced-grid">
+                  <label>
+                    High latitude
+                    <input id="latitude-select" name="latitudeAdjustmentMethod" list="latitude-options"
+                      autocomplete="off" />
+                    <datalist id="latitude-options"></datalist>
+                  </label>
 
-                <div class="offsets" aria-label="Minute offsets">
-                  <label>Fajr <input id="offset-fajr" type="number" min="-30" max="30" step="1" value="0" /></label>
-                  <label>Dhuhr <input id="offset-dhuhr" type="number" min="-30" max="30" step="1" value="0" /></label>
-                  <label>Asr <input id="offset-asr" type="number" min="-30" max="30" step="1" value="0" /></label>
-                  <label>Maghrib <input id="offset-maghrib" type="number" min="-30" max="30" step="1"
-                      value="0" /></label>
-                  <label>Isha <input id="offset-isha" type="number" min="-30" max="30" step="1" value="0" /></label>
+                  <label>
+                    Shafaq
+                    <input id="shafaq-select" name="shafaq" list="shafaq-options" autocomplete="off" disabled />
+                    <datalist id="shafaq-options"></datalist>
+                    <span class="hint">Used only with Moonsighting Committee.</span>
+                  </label>
+
+                  <div class="offsets" aria-label="Minute offsets">
+                    <label>Fajr <input id="offset-fajr" type="number" min="-30" max="30" step="1" value="0" /></label>
+                    <label>Dhuhr <input id="offset-dhuhr" type="number" min="-30" max="30" step="1"
+                        value="0" /></label>
+                    <label>Asr <input id="offset-asr" type="number" min="-30" max="30" step="1" value="0" /></label>
+                    <label>Maghrib <input id="offset-maghrib" type="number" min="-30" max="30" step="1"
+                        value="0" /></label>
+                    <label>Isha <input id="offset-isha" type="number" min="-30" max="30" step="1" value="0" /></label>
+                  </div>
                 </div>
-              </div>
-            </details>
-          </section>
+              </details>
+            </section>
 
-          <section id="general-step" class="step-panel">
-            <label class="toggle-option">
-              <span class="toggle-copy">
-                <strong>Launch at startup</strong>
-                <span class="hint">Start Hudhud with your computer.</span>
-              </span>
-              <input id="launch-at-startup" type="checkbox" />
-            </label>
+            <section id="general-step" class="step-panel">
+              <label class="toggle-option">
+                <span class="toggle-copy">
+                  <strong>Launch at startup</strong>
+                  <span class="hint">Start Hudhud with your computer.</span>
+                </span>
+                <input id="launch-at-startup" type="checkbox" />
+              </label>
 
-            <label class="toggle-option">
-              <span class="toggle-copy">
-                <strong>Keep pet on top</strong>
-                <span class="hint">Keep the pet above regular windows.</span>
-              </span>
-              <input id="pet-always-on-top" type="checkbox" />
-            </label>
+              <label class="toggle-option">
+                <span class="toggle-copy">
+                  <strong>Keep pet on top</strong>
+                  <span class="hint">Keep the pet above regular windows.</span>
+                </span>
+                <input id="pet-always-on-top" type="checkbox" />
+              </label>
 
-            <label>
-              Theme
-              <span class="segmented theme-segmented" role="group" aria-label="Theme">
-                <button class="segment active" type="button" data-theme-value="system"
-                  aria-pressed="true">System</button>
-                <button class="segment" type="button" data-theme-value="light" aria-pressed="false">Light</button>
-                <button class="segment" type="button" data-theme-value="dark" aria-pressed="false">Dark</button>
-              </span>
-            </label>
+              <label>
+                Theme
+                <span class="segmented theme-segmented" role="group" aria-label="Theme">
+                  <button class="segment active" type="button" data-theme-value="system"
+                    aria-pressed="true">System</button>
+                  <button class="segment" type="button" data-theme-value="light" aria-pressed="false">Light</button>
+                  <button class="segment" type="button" data-theme-value="dark" aria-pressed="false">Dark</button>
+                </span>
+              </label>
 
-          </section>
+            </section>
 
-          <p id="form-error" class="error"></p>
+            <p id="form-error" class="error"></p>
 
-          <div class="actions">
-            <button id="primary-action" class="button primary" type="submit">Continue</button>
-            <button id="back-action" class="button secondary" type="button">Back</button>
-            <button id="reset-action" class="button secondary" type="button">Reset</button>
+            <div class="actions">
+              <button id="primary-action" class="button primary" type="submit">Continue</button>
+              <button id="back-action" class="button secondary" type="button">Back</button>
+              <button id="reset-action" class="button secondary" type="button">Reset</button>
+            </div>
+          </div>
+        </form>
+
+        <section id="preview-pane" class="preview-pane"></section>
+      </section>
+    </section>
+
+    <section id="azkar-tab-panel" class="tab-panel" hidden>
+      <section class="azkar-shell" aria-live="polite">
+        <div id="azkar-toolbar" class="azkar-toolbar">
+          <div>
+            <span class="next-label">Daily reader</span>
+            <h2>Morning and Evening Azkar</h2>
           </div>
         </div>
-      </form>
-
-      <section id="preview-pane" class="preview-pane"></section>
+        <div id="azkar-list" class="azkar-list"></div>
+      </section>
     </section>
   </main>
 

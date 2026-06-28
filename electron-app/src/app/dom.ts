@@ -12,6 +12,12 @@ export const form = query<HTMLFormElement>("#settings-form");
 export const appVersion = query<HTMLElement>("#app-version");
 export const devBadge = query<HTMLElement>("#dev-badge");
 export const updateAction = query<HTMLButtonElement>("#update-action");
+export const mainTabs = query<HTMLElement>(".main-tabs");
+export const mainTabButtons = Array.from(
+  document.querySelectorAll<HTMLButtonElement>("[data-main-tab]"),
+);
+export const prayerTabPanel = query<HTMLElement>("#prayer-tab-panel");
+export const azkarTabPanel = query<HTMLElement>("#azkar-tab-panel");
 export const layout = query<HTMLElement>(".layout");
 export const previewPane = query<HTMLElement>("#preview-pane");
 export const formError = query<HTMLElement>("#form-error");
@@ -99,3 +105,5 @@ export const prayerBannerText = query<HTMLElement>("#prayer-banner-text");
 export const prayerBannerConfirm = query<HTMLButtonElement>(
   "#prayer-banner-confirm",
 );
+export const azkarToolbar = query<HTMLElement>("#azkar-toolbar");
+export const azkarList = query<HTMLElement>("#azkar-list");

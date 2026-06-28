@@ -1,8 +1,10 @@
 type AnimationState = "idle" | "alert" | "sleep" | "prayer" | "happy";
+type AzkarPeriod = "morning" | "evening";
 
 interface PetStatus {
   animation: AnimationState;
   bubbleText?: string;
+  activeAzkar?: AzkarPeriod;
 }
 
 const FRAME_SIZE = 120;
@@ -106,6 +108,7 @@ devBadge.hidden = !window.hudhud.isDev;
 const spriteImages = new Map<AnimationState, HTMLImageElement>();
 
 let currentState: AnimationState = "idle";
+let currentStatus: PetStatus = { animation: "idle" };
 let currentFrameIndex = 0;
 let lastFrameAt = 0;
 let animationRequestId: number | undefined;
@@ -227,6 +230,7 @@ function renderBubble(text: string | undefined): void {
 }
 
 function updatePetStatus(status: PetStatus): void {
+  currentStatus = status;
   setAnimation(status.animation);
   renderBubble(status.bubbleText);
 }
@@ -283,7 +287,15 @@ window.addEventListener("mouseup", (event) => {
     return;
   }
 
-  window.hudhud.showMainWindow();
+  if (currentStatus.activeAzkar !== undefined) {
+    window.hudhud.showMainWindow({
+      tab: "azkar",
+      period: currentStatus.activeAzkar,
+    });
+    return;
+  }
+
+  window.hudhud.showMainWindow({ tab: "prayer" });
 });
 
 window.addEventListener("mouseleave", () => {

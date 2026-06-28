@@ -2,9 +2,12 @@ import type { PrayerSettings, UpdateState } from "../types";
 import { defaultSettings } from "./constants";
 import type {
   AppState,
+  AzkarPeriod,
+  AzkarView,
   CountryCities,
   FormMode,
   HybridOption,
+  MainTab,
   PrayerResult,
   SettingsTab,
   SetupStep,
@@ -13,6 +16,9 @@ import type {
 
 export interface AppStateBag {
   currentState: AppState;
+  currentMainTab: MainTab;
+  currentAzkarView: AzkarView;
+  currentAzkarPeriod: AzkarPeriod;
   currentStep: SetupStep;
   currentSettingsTab: SettingsTab;
   formMode: FormMode;
@@ -34,6 +40,9 @@ export interface AppStateBag {
 
 export const state: AppStateBag = {
   currentState: "empty",
+  currentMainTab: "prayer",
+  currentAzkarView: "home",
+  currentAzkarPeriod: "morning",
   currentStep: "location",
   currentSettingsTab: "general",
   formMode: "onboarding",

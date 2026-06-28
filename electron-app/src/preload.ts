@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from "electron";
 import {
+  type AppDestination,
   ipcChannels as channels,
   type FeedbackInput,
   type HudhudApi,
@@ -74,8 +75,22 @@ const api: HudhudApi = {
       ipcRenderer.removeListener(channels.petAlwaysOnTopChanged, listener);
     };
   },
-  showMainWindow() {
-    ipcRenderer.send(channels.showMainWindow);
+  showMainWindow(destination) {
+    ipcRenderer.send(channels.showMainWindow, destination);
+  },
+  onOpenDestination(callback) {
+    const listener = (
+      _event: Electron.IpcRendererEvent,
+      destination: AppDestination,
+    ): void => {
+      callback(destination);
+    };
+
+    ipcRenderer.on(channels.openDestination, listener);
+
+    return () => {
+      ipcRenderer.removeListener(channels.openDestination, listener);
+    };
   },
   getLaunchAtStartup() {
     return ipcRenderer.invoke(channels.getLaunchAtStartup) as Promise<boolean>;

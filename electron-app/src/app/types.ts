@@ -1,6 +1,8 @@
 import type {
+  AzkarPeriod,
   CalculationMethod,
   MainPrayerName,
+  MainTab,
   PrayerSettings,
 } from "../types";
 import type { MAIN_PRAYERS, SECONDARY_PRAYERS } from "./constants";
@@ -9,6 +11,8 @@ export type AppState = "empty" | "loading" | "preview" | "configured" | "error";
 export type SetupStep = "location" | "calculation";
 export type SettingsTab = SetupStep | "general";
 export type FormMode = "onboarding" | "settings";
+export type AzkarView = "home" | "reader";
+export type { AzkarPeriod, MainTab };
 
 export type MainPrayer = (typeof MAIN_PRAYERS)[number];
 export type SecondaryPrayer = (typeof SECONDARY_PRAYERS)[number];
@@ -41,6 +45,20 @@ export interface PetDecision {
   status: import("../types").PetStatus;
   activeOccurrenceKey: string | null;
   activePrayerStartedAtMs: number | null;
+}
+
+export interface AzkarEntry {
+  id: string;
+  period: AzkarPeriod;
+  arabic: string;
+  repeat: number;
+  reference: string;
+}
+
+export interface AzkarProgress {
+  date: string;
+  counters: Record<string, number>;
+  completed: Record<AzkarPeriod, boolean>;
 }
 
 export interface AladhanResponse {
