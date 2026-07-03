@@ -5,11 +5,12 @@ import { type Subprocess, spawn } from "bun";
 const root = process.cwd();
 const sourceDir = path.join(root, "src");
 const bunBin = process.execPath;
-const electronmonBin = path.join(
+const electronmonCli = path.join(
   root,
   "node_modules",
-  ".bin",
-  process.platform === "win32" ? "electronmon.exe" : "electronmon",
+  "electronmon",
+  "bin",
+  "cli.js",
 );
 
 const childProcesses = new Set<Subprocess<"ignore", "inherit", "inherit">>();
@@ -84,7 +85,7 @@ async function startDev(): Promise<void> {
   }
 
   startProcess([bunBin, "x", "tsc", "--watch", "--preserveWatchOutput"]);
-  startProcess([electronmonBin, "."]);
+  startProcess([bunBin, electronmonCli, "."]);
 }
 
 void startDev();
