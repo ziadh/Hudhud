@@ -2,7 +2,11 @@
   "name": "hudhud",
   "version": "0.6.7",
   "description": "Hudhud desktop pet app",
-  "author": "ziadh",
+  "desktopName": "hudhud.desktop",
+  "author": {
+    "name": "ziadh",
+    "email": "me@ziadhussein.com"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ziadh/HudHud.git"
@@ -15,6 +19,7 @@
     "build": "bun x tsc && bun build src/app.ts --outfile=build/app.js --target=browser --format=iife && bun build src/preload.ts --outfile=build/preload.js --target=node --format=cjs --external electron && bun build src/theme-init.ts --outfile=build/theme-init.js --target=browser --format=iife && bun src/build-static.ts",
     "dist:win": "bun run build && bun x electron-builder --win",
     "dist:mac": "bun run build && bun x electron-builder --mac",
+    "dist:linux": "bun run build && bun x electron-builder --linux",
     "release:github": "bun scripts/release-github.ts",
     "watch": "bun x tsc --watch",
     "typecheck": "bun x tsc --noEmit",
@@ -56,6 +61,15 @@
     },
     "mac": {
       "icon": "assets/512.png"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "assets/512.png",
+      "category": "Utility",
+      "syncDesktopName": true
     },
     "nsis": {
       "artifactName": "${productName}-Setup-${version}.${ext}",
