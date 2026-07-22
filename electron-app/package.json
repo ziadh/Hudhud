@@ -53,7 +53,8 @@
       {
         "provider": "github",
         "owner": "ziadh",
-        "repo": "HudHud"
+        "repo": "HudHud",
+        "releaseType": "release"
       }
     ],
     "win": {
