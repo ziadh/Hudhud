@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 import {
   app,
@@ -116,11 +117,64 @@ function loginItemSettingsOptions(): Electron.Settings {
   };
 }
 
+function linuxAutostartPath(): string {
+  const configHome =
+    process.env.XDG_CONFIG_HOME ?? path.join(app.getPath("home"), ".config");
+  return path.join(configHome, "autostart", "hudhud.desktop");
+}
+
+function getLinuxLaunchAtStartup(): boolean {
+  try {
+    return fs.existsSync(linuxAutostartPath());
+  } catch {
+    return false;
+  }
+}
+
+function setLinuxLaunchAtStartup(enabled: boolean): boolean {
+  const autostartFile = linuxAutostartPath();
+
+  if (!enabled) {
+    try {
+      fs.unlinkSync(autostartFile);
+    } catch {
+      // File may not exist — that's fine
+    }
+    return false;
+  }
+
+  // AppImage sets APPIMAGE to the real on-disk path; fall back to execPath for deb/rpm
+  const execPath = process.env.APPIMAGE ?? process.execPath;
+  const content = [
+    "[Desktop Entry]",
+    "Type=Application",
+    "Name=Hudhud",
+    `Exec=${execPath} --hudhud-startup`,
+    "Hidden=false",
+    "NoDisplay=false",
+    "X-GNOME-Autostart-enabled=true",
+  ].join("\n") + "\n";
+
+  try {
+    fs.mkdirSync(path.dirname(autostartFile), { recursive: true });
+    fs.writeFileSync(autostartFile, content, "utf-8");
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function getLaunchAtStartup(): boolean {
+  if (process.platform === "linux") {
+    return getLinuxLaunchAtStartup();
+  }
   return app.getLoginItemSettings(loginItemSettingsOptions()).openAtLogin;
 }
 
 function setLaunchAtStartup(enabled: boolean): boolean {
+  if (process.platform === "linux") {
+    return setLinuxLaunchAtStartup(enabled);
+  }
   app.setLoginItemSettings({
     ...loginItemSettingsOptions(),
     openAtLogin: enabled,
