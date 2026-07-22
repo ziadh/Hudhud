@@ -1214,7 +1214,6 @@ summary {
 .azkar-shell {
   display: grid;
   gap: 22px;
-  overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 28px;
@@ -1223,10 +1222,44 @@ summary {
 }
 
 .azkar-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 18px;
+  margin: -28px -28px 0;
+  padding: 28px 28px 18px;
+  background: var(--preview-bg);
+}
+
+.azkar-back-action {
+  flex-shrink: 0;
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  min-height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--text);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.azkar-back-action:hover {
+  border-color: var(--line-strong);
+  background: var(--panel-soft);
+}
+
+.azkar-back-action svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .azkar-toolbar h2,
@@ -1383,21 +1416,6 @@ summary {
 .azkar-counter {
   justify-self: start;
   min-width: 110px;
-}
-
-.azkar-back {
-  display: inline-flex;
-  align-items: center;
-  justify-self: start;
-  min-height: 34px;
-  margin-bottom: 4px;
-  padding: 0 12px;
-  border: 1px solid var(--line-strong);
-  border-radius: 6px;
-  color: var(--text);
-  background: var(--surface);
-  font-weight: 700;
-  cursor: pointer;
 }
 
 @media (max-width: 820px) {
