@@ -1,9 +1,9 @@
 import { azkarEntries } from "./azkar-data";
-import { azkarList, azkarToolbar } from "./dom";
+import { azkarBackAction, azkarList, azkarToolbar } from "./dom";
 import { escapeHtml } from "./formatters";
 import { state } from "./state";
-import { AZKAR_PROGRESS_KEY } from "./storage-keys";
-import type { AzkarEntry, AzkarPeriod, AzkarProgress } from "./types";
+import { AZKAR_LAYOUT_KEY, AZKAR_PROGRESS_KEY } from "./storage-keys";
+import type { AzkarEntry, AzkarLayout, AzkarPeriod, AzkarProgress } from "./types";
 
 const emptyProgress = (date: string): AzkarProgress => ({
   date,
@@ -32,8 +32,14 @@ export function bindAzkarEvents(): void {
       return;
     }
 
-    if (target.closest("[data-azkar-back]") !== null) {
-      showAzkarHome();
+    const layoutButton = target.closest<HTMLButtonElement>("[data-azkar-layout]");
+    if (layoutButton !== null) {
+      const layout = layoutButton.dataset.azkarLayout;
+      if (layout === "single" || layout === "all") {
+        state.currentAzkarLayout = layout;
+        saveAzkarLayout(layout);
+        renderAzkar();
+      }
       return;
     }
 
@@ -54,6 +60,7 @@ export function bindAzkarEvents(): void {
 export function setAzkarPeriod(period: AzkarPeriod): void {
   state.currentAzkarView = "reader";
   state.currentAzkarPeriod = period;
+  state.currentAzkarLayout = loadAzkarLayout();
   renderAzkar();
 }
 
@@ -129,11 +136,17 @@ function renderAzkarReader(): void {
   const completedCount = getCompletedCount(entries, progress);
   const totalCount = entries.length;
   const isPeriodComplete = totalCount > 0 && completedCount === totalCount;
+  const layout = state.currentAzkarLayout;
 
   if (progress.completed[state.currentAzkarPeriod] !== isPeriodComplete) {
     progress.completed[state.currentAzkarPeriod] = isPeriodComplete;
     saveAzkarProgress(progress);
   }
+
+  const cards =
+    layout === "single"
+      ? renderSingleCard(entries, progress)
+      : entries.map((entry) => renderEntry(entry, progress)).join("");
 
   azkarList.innerHTML = `
     <button class="azkar-back" type="button" data-azkar-back>Back</button>
@@ -142,20 +155,45 @@ function renderAzkarReader(): void {
         <span class="next-label">${state.currentAzkarPeriod}</span>
         <h2>${getPeriodTitle(state.currentAzkarPeriod)}</h2>
       </div>
-      <strong>${completedCount}/${totalCount}</strong>
+      <div class="azkar-summary-end">
+        <strong>${completedCount}/${totalCount}</strong>
+        <div class="azkar-layout-toggle" role="group" aria-label="View mode">
+          ${renderLayoutButton("single", layout)}
+          ${renderLayoutButton("all", layout)}
+        </div>
+      </div>
     </div>
     <div class="azkar-progress" aria-label="${completedCount} of ${totalCount} completed">
       <span style="width: ${totalCount === 0 ? 0 : (completedCount / totalCount) * 100}%"></span>
     </div>
-    ${
-      isPeriodComplete
-        ? `<p class="azkar-complete">Completed for today.</p>`
-        : ""
-    }
+    ${isPeriodComplete ? `<p class="azkar-complete">Completed for today.</p>` : ""}
     <div class="azkar-cards">
-      ${entries.map((entry) => renderEntry(entry, progress)).join("")}
+      ${cards}
     </div>
   `;
+}
+
+function renderLayoutButton(mode: AzkarLayout, current: AzkarLayout): string {
+  const isActive = mode === current;
+  const label = mode === "single" ? "One at a time" : "All at once";
+  const icon =
+    mode === "single"
+      ? `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="2"/></svg>`
+      : `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="12" height="5" rx="1.5"/><rect x="2" y="9" width="12" height="5" rx="1.5"/></svg>`;
+  return `<button class="button icon-button" type="button" data-azkar-layout="${mode}" aria-pressed="${isActive}" aria-label="${label}">${icon}</button>`;
+}
+
+function renderSingleCard(
+  entries: readonly AzkarEntry[],
+  progress: AzkarProgress,
+): string {
+  const current = entries.find(
+    (entry) => getEntryCount(progress, entry) < entry.repeat,
+  );
+  if (current === undefined) {
+    return "";
+  }
+  return renderEntry(current, progress);
 }
 
 function renderEntry(entry: AzkarEntry, progress: AzkarProgress): string {
@@ -237,6 +275,15 @@ function loadAzkarProgress(): AzkarProgress {
 
 function saveAzkarProgress(progress: AzkarProgress): void {
   localStorage.setItem(AZKAR_PROGRESS_KEY, JSON.stringify(progress));
+}
+
+function loadAzkarLayout(): AzkarLayout {
+  const stored = localStorage.getItem(AZKAR_LAYOUT_KEY);
+  return stored === "all" ? "all" : "single";
+}
+
+function saveAzkarLayout(layout: AzkarLayout): void {
+  localStorage.setItem(AZKAR_LAYOUT_KEY, layout);
 }
 
 function isAzkarProgress(value: unknown): value is AzkarProgress {

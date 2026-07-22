@@ -106,4 +106,5 @@ export const prayerBannerConfirm = query<HTMLButtonElement>(
   "#prayer-banner-confirm",
 );
 export const azkarToolbar = query<HTMLElement>("#azkar-toolbar");
+export const azkarBackAction = query<HTMLButtonElement>("#azkar-back-action");
 export const azkarList = query<HTMLElement>("#azkar-list");

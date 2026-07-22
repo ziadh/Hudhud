@@ -1293,6 +1293,33 @@ summary {
   font-weight: 780;
 }
 
+.azkar-summary-end {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.azkar-layout-toggle {
+  display: flex;
+  gap: 4px;
+}
+
+.azkar-layout-toggle .button.icon-button {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--muted);
+  background: transparent;
+}
+
+.azkar-layout-toggle .button.icon-button[aria-pressed="true"] {
+  border-color: var(--green-border);
+  color: var(--green);
+  background: var(--green-soft);
+}
+
 .azkar-progress {
   height: 8px;
   overflow: hidden;

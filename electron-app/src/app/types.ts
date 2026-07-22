@@ -12,6 +12,7 @@ export type SetupStep = "location" | "calculation";
 export type SettingsTab = SetupStep | "general";
 export type FormMode = "onboarding" | "settings";
 export type AzkarView = "home" | "reader";
+export type AzkarLayout = "single" | "all";
 export type { AzkarPeriod, MainTab };
 
 export type MainPrayer = (typeof MAIN_PRAYERS)[number];
