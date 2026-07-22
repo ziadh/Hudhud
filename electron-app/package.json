@@ -71,8 +71,7 @@
         "deb"
       ],
       "icon": "assets/512.png",
-      "category": "Utility",
-      "syncDesktopName": true
+      "category": "Utility"
     },
     "nsis": {
       "artifactName": "${productName}-Setup-${version}.${ext}",
