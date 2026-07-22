@@ -1,0 +1,84 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+defaults:
+  run:
+    working-directory: electron-app
+
+jobs:
+  release:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            eb_platform: --linux
+            electron_cache: ~/.cache/electron
+            electron_builder_cache: ~/.cache/electron-builder
+          - os: windows-latest
+            eb_platform: --win
+            electron_cache: ~\AppData\Local\electron\Cache
+            electron_builder_cache: ~\AppData\Local\electron-builder\Cache
+          - os: macos-latest
+            eb_platform: --mac
+            electron_cache: ~/Library/Caches/electron
+            electron_builder_cache: ~/Library/Caches/electron-builder
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Cache Electron binaries
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ matrix.electron_cache }}
+            ${{ matrix.electron_builder_cache }}
+          key: ${{ runner.os }}-electron-${{ hashFiles('electron-app/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-electron-
+
+      - name: Extract release notes
+        id: notes
+        shell: bash
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          NOTES=$(awk "/^## v${VERSION}$/{found=1; next} found && /^## /{exit} found{print}" CHANGELOG.md)
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_OUTPUT
+          echo "$NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          maximum_attempts=3
+          for attempt in $(seq 1 $maximum_attempts); do
+            echo "bun install attempt $attempt of $maximum_attempts"
+            bun install && exit 0
+            if [ $attempt -lt $maximum_attempts ]; then
+              delay=$((15 * attempt))
+              echo "bun install failed, retrying in ${delay}s"
+              sleep $delay
+            fi
+          done
+          echo "bun install failed after $maximum_attempts attempts" && exit 1
+
+      - name: Build and publish
+        shell: bash
+        run: |
+          bun run build
+          bun x electron-builder ${{ matrix.eb_platform }} --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          RELEASE_NOTES: ${{ steps.notes.outputs.RELEASE_NOTES }}

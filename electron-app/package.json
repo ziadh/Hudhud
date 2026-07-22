@@ -1,6 +1,6 @@
 {
   "name": "hudhud",
-  "version": "0.6.8",
+  "version": "v0.6.8",
   "description": "Hudhud desktop pet app",
   "desktopName": "hudhud.desktop",
   "author": {
@@ -37,6 +37,9 @@
     "appId": "com.hudhud.app",
     "productName": "Hudhud",
     "icon": "assets/logo.png",
+    "releaseInfo": {
+      "releaseNotes": "${env.RELEASE_NOTES}"
+    },
     "files": [
       "build/**/*",
       "assets/**/*",
