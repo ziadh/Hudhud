@@ -15,6 +15,8 @@ const emptyProgress = (date: string): AzkarProgress => ({
 });
 
 export function bindAzkarEvents(): void {
+  azkarBackAction.addEventListener("click", showAzkarHome);
+
   azkarList.addEventListener("click", (event) => {
     const target = event.target;
     if (!(target instanceof Element)) {
@@ -96,6 +98,7 @@ export function getLocalDateKey(date = new Date()): string {
 
 function renderAzkarHome(): void {
   azkarToolbar.hidden = false;
+  azkarBackAction.hidden = true;
   const progress = loadAzkarProgress();
   azkarList.innerHTML = `
     <div class="azkar-home-cards">
@@ -130,7 +133,8 @@ function renderPeriodCard(
 }
 
 function renderAzkarReader(): void {
-  azkarToolbar.hidden = true;
+  azkarToolbar.hidden = false;
+  azkarBackAction.hidden = false;
   const progress = loadAzkarProgress();
   const entries = getEntriesForPeriod(state.currentAzkarPeriod);
   const completedCount = getCompletedCount(entries, progress);
@@ -149,7 +153,6 @@ function renderAzkarReader(): void {
       : entries.map((entry) => renderEntry(entry, progress)).join("");
 
   azkarList.innerHTML = `
-    <button class="azkar-back" type="button" data-azkar-back>Back</button>
     <div class="azkar-summary">
       <div>
         <span class="next-label">${state.currentAzkarPeriod}</span>
