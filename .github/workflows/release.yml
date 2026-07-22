@@ -28,6 +28,8 @@ jobs:
             electron_builder_cache: ~/Library/Caches/electron-builder
 
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout code
@@ -80,5 +82,5 @@ jobs:
           bun run build
           bun x electron-builder ${{ matrix.eb_platform }} --publish always
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_NOTES: ${{ steps.notes.outputs.RELEASE_NOTES }}
