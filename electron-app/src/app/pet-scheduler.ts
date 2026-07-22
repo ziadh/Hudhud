@@ -264,6 +264,7 @@ function getActiveAzkarPeriod(
   if (
     todayFajr !== null &&
     nowMs >= todayFajr.date.getTime() &&
+    (todayAsr === null || nowMs < todayAsr.date.getTime()) &&
     !isAzkarComplete("morning")
   ) {
     return "morning";
