@@ -304,6 +304,10 @@ h1 {
   box-shadow: var(--shadow);
 }
 
+.main-tabs[hidden] {
+  display: none;
+}
+
 .main-tabs {
   display: inline-grid;
   grid-template-columns: repeat(2, minmax(120px, 1fr));
@@ -1221,6 +1225,10 @@ summary {
   box-shadow: var(--shadow);
 }
 
+.azkar-toolbar[hidden] {
+  display: none;
+}
+
 .azkar-toolbar {
   position: sticky;
   top: 0;
@@ -1262,7 +1270,6 @@ summary {
   stroke-linejoin: round;
 }
 
-.azkar-toolbar h2,
 .azkar-summary h2 {
   font-size: 1.35rem;
   line-height: 1.2;
@@ -1318,6 +1325,12 @@ summary {
   align-items: flex-end;
   justify-content: space-between;
   gap: 16px;
+}
+
+.azkar-summary-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .azkar-summary strong {

@@ -1,5 +1,5 @@
 import { azkarEntries } from "./azkar-data";
-import { azkarBackAction, azkarList, azkarToolbar } from "./dom";
+import { azkarList } from "./dom";
 import { escapeHtml } from "./formatters";
 import { state } from "./state";
 import { AZKAR_LAYOUT_KEY, AZKAR_PROGRESS_KEY } from "./storage-keys";
@@ -15,11 +15,15 @@ const emptyProgress = (date: string): AzkarProgress => ({
 });
 
 export function bindAzkarEvents(): void {
-  azkarBackAction.addEventListener("click", showAzkarHome);
-
   azkarList.addEventListener("click", (event) => {
     const target = event.target;
     if (!(target instanceof Element)) {
+      return;
+    }
+
+    const backButton = target.closest<HTMLButtonElement>("[data-azkar-back]");
+    if (backButton !== null) {
+      showAzkarHome();
       return;
     }
 
@@ -97,9 +101,6 @@ export function getLocalDateKey(date = new Date()): string {
 }
 
 function renderAzkarHome(): void {
-  azkarToolbar.hidden = false;
-  azkarBackAction.hidden = true;
-  azkarToolbar.style.visibility = "visible";
   const progress = loadAzkarProgress();
   azkarList.innerHTML = `
     <div class="azkar-home-cards">
@@ -134,8 +135,6 @@ function renderPeriodCard(
 }
 
 function renderAzkarReader(): void {
-  azkarToolbar.hidden = true;
-  azkarBackAction.hidden = true;
   const progress = loadAzkarProgress();
   const entries = getEntriesForPeriod(state.currentAzkarPeriod);
   const completedCount = getCompletedCount(entries, progress);
@@ -155,8 +154,8 @@ function renderAzkarReader(): void {
 
   azkarList.innerHTML = `
     <div class="azkar-summary">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <button class="azkar-back-action azkar-back-summary" type="button"
+      <div class="azkar-summary-title">
+        <button class="azkar-back-action" type="button" data-azkar-back
           aria-label="Back to azkar home" title="Back to azkar home">
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path d="M19 12H5"></path>
@@ -181,13 +180,6 @@ function renderAzkarReader(): void {
       ${cards}
     </div>
   `;
-
-  const backButton = azkarList.querySelector<HTMLButtonElement>(
-    ".azkar-back-summary",
-  );
-  if (backButton !== null) {
-    backButton.addEventListener("click", showAzkarHome);
-  }
 }
 
 function renderLayoutButton(mode: AzkarLayout, current: AzkarLayout): string {
