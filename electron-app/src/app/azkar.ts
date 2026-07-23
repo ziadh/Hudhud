@@ -99,6 +99,7 @@ export function getLocalDateKey(date = new Date()): string {
 function renderAzkarHome(): void {
   azkarToolbar.hidden = false;
   azkarBackAction.hidden = true;
+  azkarToolbar.style.visibility = "visible";
   const progress = loadAzkarProgress();
   azkarList.innerHTML = `
     <div class="azkar-home-cards">
@@ -133,8 +134,8 @@ function renderPeriodCard(
 }
 
 function renderAzkarReader(): void {
-  azkarToolbar.hidden = false;
-  azkarBackAction.hidden = false;
+  azkarToolbar.hidden = true;
+  azkarBackAction.hidden = true;
   const progress = loadAzkarProgress();
   const entries = getEntriesForPeriod(state.currentAzkarPeriod);
   const completedCount = getCompletedCount(entries, progress);
@@ -154,8 +155,14 @@ function renderAzkarReader(): void {
 
   azkarList.innerHTML = `
     <div class="azkar-summary">
-      <div>
-        <span class="next-label">${state.currentAzkarPeriod}</span>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <button class="azkar-back-action azkar-back-summary" type="button"
+          aria-label="Back to azkar home" title="Back to azkar home">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M19 12H5"></path>
+            <path d="m12 19-7-7 7-7"></path>
+          </svg>
+        </button>
         <h2>${getPeriodTitle(state.currentAzkarPeriod)}</h2>
       </div>
       <div class="azkar-summary-end">
@@ -174,6 +181,13 @@ function renderAzkarReader(): void {
       ${cards}
     </div>
   `;
+
+  const backButton = azkarList.querySelector<HTMLButtonElement>(
+    ".azkar-back-summary",
+  );
+  if (backButton !== null) {
+    backButton.addEventListener("click", showAzkarHome);
+  }
 }
 
 function renderLayoutButton(mode: AzkarLayout, current: AzkarLayout): string {
