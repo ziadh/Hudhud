@@ -34,6 +34,7 @@ import {
   confirmCurrentPrayer,
   setPetStatusCallback,
   startPetScheduler,
+  triggerPetHappy,
   updatePetScheduler,
 } from "./pet-scheduler";
 import { bindReleaseNotesEvents } from "./release-notes";
@@ -328,6 +329,10 @@ function bindPetEvents(): void {
 
   window.addEventListener("azkar:progress-changed", () => {
     updatePetScheduler();
+  });
+
+  window.addEventListener("azkar:period-complete", () => {
+    triggerPetHappy();
   });
 
   setPetStatusCallback((status) => {

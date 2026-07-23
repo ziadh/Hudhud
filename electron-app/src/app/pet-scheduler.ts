@@ -96,6 +96,10 @@ export function confirmCurrentPrayer(prayer: MainPrayerName): void {
   confirmedPrayerOccurrences.add(decision.activeOccurrenceKey);
   markPrayerConfirmHintSeen();
   state.activePrayerOccurrenceKey = null;
+  triggerPetHappy();
+}
+
+export function triggerPetHappy(): void {
   state.happyUntil = Date.now() + PET_HAPPY_MS;
   window.hudhud.updatePetStatus({ animation: "happy" });
   petStatusCallback?.({ animation: "happy" });

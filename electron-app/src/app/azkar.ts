@@ -237,9 +237,23 @@ function incrementCounter(entry: AzkarEntry): void {
   }
 
   progress.counters[entry.id] = current + 1;
+
+  const period = entry.period;
+  const wasComplete = progress.completed[period];
+  const periodEntries = getEntriesForPeriod(period);
+  const isComplete = periodEntries.every(
+    (periodEntry) => getEntryCount(progress, periodEntry) >= periodEntry.repeat,
+  );
+  progress.completed[period] = isComplete;
+
   saveAzkarProgress(progress);
   renderAzkar();
   window.dispatchEvent(new CustomEvent("azkar:progress-changed"));
+  if (isComplete && !wasComplete) {
+    window.dispatchEvent(
+      new CustomEvent("azkar:period-complete", { detail: { period } }),
+    );
+  }
 }
 
 function getCompletedCount(
