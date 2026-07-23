@@ -1,3 +1,8 @@
+## v0.7.1
+
+- End morning azkar period at Dhuhr instead of Asr
+- Fix pet window display on Linux
+
 ## v0.7.0
 
 - Make azkar toolbar sticky with persistent back button

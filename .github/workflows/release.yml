@@ -51,6 +51,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-electron-
 
+      - name: Generate changelog
+        shell: bash
+        run: bun scripts/changelog.ts ${GITHUB_REF_NAME}
+
       - name: Extract release notes
         id: notes
         shell: bash

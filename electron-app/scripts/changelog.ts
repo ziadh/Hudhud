@@ -6,7 +6,7 @@ import process from "node:process";
 const CHANGELOG_PATH = path.resolve(__dirname, "../CHANGELOG.md");
 
 const SKIP_PATTERNS: RegExp[] = [
-  /^bump$/i,
+  /^bump\b/i,
   /^merge pull request\b/i,
   /^merge branch\b/i,
   /^chore[:(]/i,
@@ -62,6 +62,20 @@ function isNoise(subject: string): boolean {
   return SKIP_PATTERNS.some((pattern) => pattern.test(subject));
 }
 
+function removeExistingSection(content: string, tag: string): string {
+  const lines = content.split("\n");
+  const heading = `## ${tag}`;
+  const startIdx = lines.findIndex((l) => l === heading);
+  if (startIdx === -1) return content;
+  let endIdx = lines.findIndex((l, i) => i > startIdx && l.startsWith("## "));
+  if (endIdx === -1) endIdx = lines.length;
+  const before = lines.slice(0, startIdx).filter((l, i, arr) => {
+    if (i === arr.length - 1 && l.trim() === "") return false;
+    return true;
+  });
+  return [...before, ...lines.slice(endIdx)].join("\n");
+}
+
 async function main(): Promise<void> {
   const tagArg = process.argv[2];
 
@@ -85,7 +99,8 @@ async function main(): Promise<void> {
 
   const newSection = `## ${latestTag}\n\n${bullets}`;
 
-  const existing = await readFile(CHANGELOG_PATH, "utf8").catch(() => "");
+  const raw = await readFile(CHANGELOG_PATH, "utf8").catch(() => "");
+  const existing = removeExistingSection(raw, latestTag);
   const updated =
     existing.trim() === ""
       ? newSection
