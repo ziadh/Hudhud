@@ -2,7 +2,7 @@
 
 - Make azkar toolbar sticky with persistent back button
 - Add layout toggle for azkar reader (single/all view)
-- Fix morning azkar period to end at Asr time
+- End morning azkar alerts at local Dhuhr time
 
 ## v0.6.8
 

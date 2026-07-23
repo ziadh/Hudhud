@@ -251,6 +251,7 @@ function getActiveAzkarPeriod(
   nowMs: number,
 ): AzkarPeriod | null {
   const todayFajr = findTodayPrayer(schedule, "Fajr", nowMs);
+  const todayDhuhr = findTodayPrayer(schedule, "Dhuhr", nowMs);
   const todayAsr = findTodayPrayer(schedule, "Asr", nowMs);
 
   if (
@@ -263,8 +264,9 @@ function getActiveAzkarPeriod(
 
   if (
     todayFajr !== null &&
+    todayDhuhr !== null &&
     nowMs >= todayFajr.date.getTime() &&
-    (todayAsr === null || nowMs < todayAsr.date.getTime()) &&
+    nowMs < todayDhuhr.date.getTime() &&
     !isAzkarComplete("morning")
   ) {
     return "morning";
