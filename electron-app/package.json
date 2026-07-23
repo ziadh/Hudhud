@@ -20,6 +20,7 @@
     "dist:win": "bun run build && bun x electron-builder --win",
     "dist:mac": "bun run build && bun x electron-builder --mac",
     "dist:linux": "bun run build && bun x electron-builder --linux",
+    "changelog": "bun scripts/changelog.ts",
     "release:github": "bun scripts/release-github.ts",
     "watch": "bun x tsc --watch",
     "typecheck": "bun x tsc --noEmit",
