@@ -566,6 +566,7 @@ function createPetWindow(): BrowserWindow {
     hasShadow: false,
     show: false,
     backgroundColor: "#00000000",
+    ...(process.platform === "linux" && { type: "toolbar" as const }),
     webPreferences: {
       preload: fromDist("preload.js"),
       additionalArguments: [`--hudhud-dev=${isDevelopment() ? "1" : "0"}`],
@@ -581,6 +582,9 @@ function createPetWindow(): BrowserWindow {
   window.once("ready-to-show", () => {
     window.webContents.send(channels.updatePetStatus, currentPetStatus);
     window.showInactive();
+    if (process.platform === "linux") {
+      window.setSkipTaskbar(true);
+    }
   });
   window.on("closed", () => {
     petWindow = null;
