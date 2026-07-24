@@ -1,3 +1,10 @@
+## v0.7.2
+
+- Fix Linux auto start bug
+- Add English translations and transliterations to azkar viewer
+- Make pet happy when azkar period is complete
+- Simplify azkar viewer header
+
 ## v0.7.1
 
 - End morning azkar period at Dhuhr instead of Asr
