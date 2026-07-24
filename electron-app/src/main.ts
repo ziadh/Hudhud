@@ -143,13 +143,17 @@ function setLinuxLaunchAtStartup(enabled: boolean): boolean {
     return false;
   }
 
+  const { path: settingsPath, args } = loginItemSettingsOptions();
   // AppImage sets APPIMAGE to the real on-disk path; fall back to execPath for deb/rpm
-  const execPath = process.env.APPIMAGE ?? process.execPath;
+  const execPath = process.env.APPIMAGE ?? settingsPath;
+  const execLine = [execPath, ...(args ?? [])]
+    .map((part) => `"${part}"`)
+    .join(" ");
   const content = [
     "[Desktop Entry]",
     "Type=Application",
     "Name=Hudhud",
-    `Exec=${execPath} --hudhud-startup`,
+    `Exec=${execLine}`,
     "Hidden=false",
     "NoDisplay=false",
     "X-GNOME-Autostart-enabled=true",
