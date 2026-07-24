@@ -2,6 +2,7 @@ import type { PrayerSettings, UpdateState } from "../types";
 import { defaultSettings } from "./constants";
 import type {
   AppState,
+  AzkarDisplayPreferences,
   AzkarLayout,
   AzkarPeriod,
   AzkarView,
@@ -21,6 +22,7 @@ export interface AppStateBag {
   currentAzkarView: AzkarView;
   currentAzkarPeriod: AzkarPeriod;
   currentAzkarLayout: AzkarLayout;
+  azkarDisplayPreferences: AzkarDisplayPreferences;
   currentStep: SetupStep;
   currentSettingsTab: SettingsTab;
   formMode: FormMode;
@@ -46,6 +48,10 @@ export const state: AppStateBag = {
   currentAzkarView: "home",
   currentAzkarPeriod: "morning",
   currentAzkarLayout: "single",
+  azkarDisplayPreferences: {
+    transliteration: true,
+    translation: true,
+  },
   currentStep: "location",
   currentSettingsTab: "general",
   formMode: "onboarding",

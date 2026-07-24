@@ -1346,9 +1346,33 @@ summary {
   gap: 8px;
 }
 
+.azkar-reader-controls,
+.azkar-display-toggle,
 .azkar-layout-toggle {
   display: flex;
   gap: 4px;
+}
+
+.azkar-reader-controls {
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.azkar-display-button {
+  min-height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 5px 9px;
+  color: var(--muted);
+  background: transparent;
+  font-size: 0.75rem;
+}
+
+.azkar-display-button[aria-pressed="true"] {
+  border-color: var(--green-border);
+  color: var(--green);
+  background: var(--green-soft);
 }
 
 .azkar-layout-toggle .button.icon-button {
@@ -1426,6 +1450,36 @@ summary {
   line-height: 2.05;
 }
 
+.azkar-supporting-text {
+  display: grid;
+  gap: 5px;
+  padding-top: 2px;
+}
+
+.azkar-supporting-label {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 760;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.azkar-transliteration,
+.azkar-translation {
+  max-width: 76ch;
+  font-size: 0.93rem;
+  line-height: 1.65;
+}
+
+.azkar-transliteration {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.azkar-translation {
+  color: var(--muted);
+}
+
 .azkar-counter {
   justify-self: start;
   min-width: 110px;
@@ -1463,6 +1517,21 @@ summary {
 
   .azkar-home-cards {
     grid-template-columns: 1fr;
+  }
+
+  .azkar-summary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .azkar-summary-end {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .azkar-reader-controls {
+    justify-content: flex-start;
+    width: 100%;
   }
 
   .form-pane {

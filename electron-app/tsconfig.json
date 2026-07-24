@@ -19,6 +19,7 @@
     "build",
     "dist",
     "release",
+    "src/**/*.test.ts",
     "src/preload.ts",
     "src/theme-init.ts"
   ]

@@ -1,4 +1,10 @@
+import { getAzkarEnglish } from "./azkar-english";
 import type { AzkarEntry } from "./types";
+
+type RawAzkarEntry = Omit<
+  AzkarEntry,
+  "period" | "id" | "transliteration" | "translation"
+>;
 
 const referenceOrder = [
   "75",
@@ -30,7 +36,7 @@ const referenceOrder = [
   "99",
 ] as const;
 
-const commonAzkar: readonly Omit<AzkarEntry, "period" | "id">[] = [
+const commonAzkar: readonly RawAzkarEntry[] = [
   {
     arabic:
       "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ، لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ، لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ، مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ، يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ، وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ، وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ، وَلَا يَئُودُهُ حِفْظُهُمَا، وَهُوَ الْعَلِيُّ الْعَظِيمُ",
@@ -38,8 +44,7 @@ const commonAzkar: readonly Omit<AzkarEntry, "period" | "id">[] = [
     reference: "Hisn al-Muslim 75",
   },
   {
-    arabic:
-      "قُلْ هُوَ اللَّهُ أَحَدٌ، اللَّهُ الصَّمَدُ، لَمْ يَلِدْ وَلَمْ يُولَدْ، وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ",
+    arabic: "قُلْ هُوَ اللَّهُ أَحَدٌ، اللَّهُ الصَّمَدُ، لَمْ يَلِدْ وَلَمْ يُولَدْ، وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ",
     repeat: 3,
     reference: "Hisn al-Muslim 76a",
   },
@@ -107,7 +112,7 @@ const commonAzkar: readonly Omit<AzkarEntry, "period" | "id">[] = [
   },
 ];
 
-const morningOnlyAzkar: readonly Omit<AzkarEntry, "period" | "id">[] = [
+const morningOnlyAzkar: readonly RawAzkarEntry[] = [
   {
     arabic:
       "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ، وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ، وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذَا الْيَوْمِ، وَخَيْرَ مَا بَعْدَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذَا الْيَوْمِ، وَشَرِّ مَا بَعْدَهُ، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ، وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ، وَعَذَابٍ فِي الْقَبْرِ",
@@ -184,7 +189,7 @@ const morningOnlyAzkar: readonly Omit<AzkarEntry, "period" | "id">[] = [
   },
 ];
 
-const eveningOnlyAzkar: readonly Omit<AzkarEntry, "period" | "id">[] = [
+const eveningOnlyAzkar: readonly RawAzkarEntry[] = [
   {
     arabic:
       "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ، وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ، وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذِهِ اللَّيْلَةِ، وَخَيْرَ مَا بَعْدَهَا، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذِهِ اللَّيْلَةِ، وَشَرِّ مَا بَعْدَهَا، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ، وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ، وَعَذَابٍ فِي الْقَبْرِ",
@@ -252,19 +257,17 @@ export const azkarEntries: readonly AzkarEntry[] = [
 
 function buildEntries(
   period: AzkarEntry["period"],
-  entries: readonly Omit<AzkarEntry, "period" | "id">[],
+  entries: readonly RawAzkarEntry[],
 ): AzkarEntry[] {
   return [...entries].sort(compareByReference).map((entry, index) => ({
     ...entry,
+    ...getAzkarEnglish(entry.reference, period),
     period,
     id: `${period}-${index + 1}`,
   }));
 }
 
-function compareByReference(
-  left: Omit<AzkarEntry, "period" | "id">,
-  right: Omit<AzkarEntry, "period" | "id">,
-): number {
+function compareByReference(left: RawAzkarEntry, right: RawAzkarEntry): number {
   return referenceIndex(left.reference) - referenceIndex(right.reference);
 }
 

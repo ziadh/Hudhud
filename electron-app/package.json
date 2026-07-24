@@ -24,6 +24,7 @@
     "release:github": "bun scripts/release-github.ts",
     "watch": "bun x tsc --watch",
     "typecheck": "bun x tsc --noEmit",
+    "test": "bun test",
     "lint": "bunx biome check --diagnostic-level=error src scripts",
     "format": "bunx biome format --write src scripts"
   },

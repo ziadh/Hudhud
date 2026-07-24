@@ -95,4 +95,7 @@ No analytics, no tracking, no account required.
 
 [MIT](LICENSE)
 
+Bundled religious text and data attributions are listed in
+[Third-Party Notices](THIRD_PARTY_NOTICES.md).
+
 [![Star History Chart](https://api.star-history.com/svg?repos=ziadh/Hudhud&type=date&legend=top-left)](https://www.star-history.com/#ziadh/Hudhud&type=date&legend=top-left)

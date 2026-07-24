@@ -1,9 +1,23 @@
 import { azkarEntries } from "./azkar-data";
+import {
+  parseAzkarDisplayPreferences,
+  toggleAzkarDisplayPreference,
+} from "./azkar-display";
 import { azkarList } from "./dom";
 import { escapeHtml } from "./formatters";
 import { state } from "./state";
-import { AZKAR_LAYOUT_KEY, AZKAR_PROGRESS_KEY } from "./storage-keys";
-import type { AzkarEntry, AzkarLayout, AzkarPeriod, AzkarProgress } from "./types";
+import {
+  AZKAR_DISPLAY_KEY,
+  AZKAR_LAYOUT_KEY,
+  AZKAR_PROGRESS_KEY,
+} from "./storage-keys";
+import type {
+  AzkarDisplayPreferences,
+  AzkarEntry,
+  AzkarLayout,
+  AzkarPeriod,
+  AzkarProgress,
+} from "./types";
 
 const emptyProgress = (date: string): AzkarProgress => ({
   date,
@@ -38,12 +52,30 @@ export function bindAzkarEvents(): void {
       return;
     }
 
-    const layoutButton = target.closest<HTMLButtonElement>("[data-azkar-layout]");
+    const layoutButton = target.closest<HTMLButtonElement>(
+      "[data-azkar-layout]",
+    );
     if (layoutButton !== null) {
       const layout = layoutButton.dataset.azkarLayout;
       if (layout === "single" || layout === "all") {
         state.currentAzkarLayout = layout;
         saveAzkarLayout(layout);
+        renderAzkar();
+      }
+      return;
+    }
+
+    const displayButton = target.closest<HTMLButtonElement>(
+      "[data-azkar-display]",
+    );
+    if (displayButton !== null) {
+      const field = displayButton.dataset.azkarDisplay;
+      if (field === "transliteration" || field === "translation") {
+        state.azkarDisplayPreferences = toggleAzkarDisplayPreference(
+          state.azkarDisplayPreferences,
+          field,
+        );
+        saveAzkarDisplayPreferences(state.azkarDisplayPreferences);
         renderAzkar();
       }
       return;
@@ -67,6 +99,7 @@ export function setAzkarPeriod(period: AzkarPeriod): void {
   state.currentAzkarView = "reader";
   state.currentAzkarPeriod = period;
   state.currentAzkarLayout = loadAzkarLayout();
+  state.azkarDisplayPreferences = loadAzkarDisplayPreferences();
   renderAzkar();
 }
 
@@ -166,9 +199,15 @@ function renderAzkarReader(): void {
       </div>
       <div class="azkar-summary-end">
         <strong>${completedCount}/${totalCount}</strong>
-        <div class="azkar-layout-toggle" role="group" aria-label="View mode">
-          ${renderLayoutButton("single", layout)}
-          ${renderLayoutButton("all", layout)}
+        <div class="azkar-reader-controls">
+          <div class="azkar-display-toggle" role="group" aria-label="Supporting text">
+            ${renderDisplayButton("transliteration", state.azkarDisplayPreferences)}
+            ${renderDisplayButton("translation", state.azkarDisplayPreferences)}
+          </div>
+          <div class="azkar-layout-toggle" role="group" aria-label="View mode">
+            ${renderLayoutButton("single", layout)}
+            ${renderLayoutButton("all", layout)}
+          </div>
         </div>
       </div>
     </div>
@@ -180,6 +219,15 @@ function renderAzkarReader(): void {
       ${cards}
     </div>
   `;
+}
+
+function renderDisplayButton(
+  field: keyof AzkarDisplayPreferences,
+  preferences: AzkarDisplayPreferences,
+): string {
+  const label = field === "transliteration" ? "Transliteration" : "Translation";
+  const action = preferences[field] ? "Hide" : "Show";
+  return `<button class="button azkar-display-button" type="button" data-azkar-display="${field}" aria-pressed="${preferences[field]}" aria-label="${action} ${label.toLowerCase()}">${label}</button>`;
 }
 
 function renderLayoutButton(mode: AzkarLayout, current: AzkarLayout): string {
@@ -222,6 +270,22 @@ function renderEntry(entry: AzkarEntry, progress: AzkarProgress): string {
         <span>${entry.repeat}x</span>
       </div>
       <p class="azkar-arabic" lang="ar" dir="rtl">${escapeHtml(entry.arabic)}</p>
+      ${
+        state.azkarDisplayPreferences.transliteration
+          ? `<div class="azkar-supporting-text">
+              <span class="azkar-supporting-label">Transliteration</span>
+              <p class="azkar-transliteration" lang="ar-Latn" dir="ltr">${escapeHtml(entry.transliteration)}</p>
+            </div>`
+          : ""
+      }
+      ${
+        state.azkarDisplayPreferences.translation
+          ? `<div class="azkar-supporting-text">
+              <span class="azkar-supporting-label">Translation</span>
+              <p class="azkar-translation" lang="en" dir="ltr">${escapeHtml(entry.translation)}</p>
+            </div>`
+          : ""
+      }
       <button class="button ${isComplete ? "secondary" : "primary"} azkar-counter" type="button" data-azkar-entry="${escapeHtml(entry.id)}">
         ${escapeHtml(buttonLabel)}
       </button>
@@ -307,6 +371,16 @@ function loadAzkarLayout(): AzkarLayout {
 
 function saveAzkarLayout(layout: AzkarLayout): void {
   localStorage.setItem(AZKAR_LAYOUT_KEY, layout);
+}
+
+function loadAzkarDisplayPreferences(): AzkarDisplayPreferences {
+  return parseAzkarDisplayPreferences(localStorage.getItem(AZKAR_DISPLAY_KEY));
+}
+
+function saveAzkarDisplayPreferences(
+  preferences: AzkarDisplayPreferences,
+): void {
+  localStorage.setItem(AZKAR_DISPLAY_KEY, JSON.stringify(preferences));
 }
 
 function isAzkarProgress(value: unknown): value is AzkarProgress {

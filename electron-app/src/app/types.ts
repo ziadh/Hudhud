@@ -52,8 +52,15 @@ export interface AzkarEntry {
   id: string;
   period: AzkarPeriod;
   arabic: string;
+  transliteration: string;
+  translation: string;
   repeat: number;
   reference: string;
+}
+
+export interface AzkarDisplayPreferences {
+  transliteration: boolean;
+  translation: boolean;
 }
 
 export interface AzkarProgress {
