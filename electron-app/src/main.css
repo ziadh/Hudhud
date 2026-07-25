@@ -163,7 +163,9 @@ button {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  min-width: 170px;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-width: 0;
 }
 
 .brand {
@@ -253,7 +255,9 @@ h1 {
 .update-action {
   --update-progress: 0%;
   position: relative;
+  flex: 0 1 210px;
   min-height: 34px;
+  min-width: 0;
   max-width: 210px;
   overflow: hidden;
   border: 1px solid var(--green-border);
@@ -310,9 +314,9 @@ h1 {
 
 .main-tabs {
   display: inline-grid;
-  grid-template-columns: repeat(2, minmax(120px, 1fr));
+  flex: 0 0 auto;
+  grid-template-columns: repeat(2, minmax(82px, 1fr));
   gap: 6px;
-  margin-bottom: 16px;
   padding: 4px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -1432,22 +1436,30 @@ summary {
   background: var(--green-soft);
 }
 
-.azkar-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  color: var(--muted);
-  font-size: 0.78rem;
-  font-weight: 760;
-  text-transform: uppercase;
-}
-
 .azkar-arabic {
   color: var(--text);
   font-family: "Geeza Pro", "Noto Naskh Arabic", "Traditional Arabic", serif;
   font-size: 1.48rem;
   line-height: 2.05;
+}
+
+.azkar-repeat-separator,
+.azkar-repeat {
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.72em;
+  white-space: nowrap;
+}
+
+.azkar-repeat-separator {
+  margin-inline: 0.18em;
+}
+
+.azkar-reference {
+  margin-top: -10px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 .azkar-supporting-text {
@@ -1485,6 +1497,33 @@ summary {
   min-width: 110px;
 }
 
+.azkar-navigation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+}
+
+.azkar-navigation .button:first-child {
+  justify-self: start;
+}
+
+.azkar-navigation .button:last-child {
+  justify-self: end;
+}
+
+.azkar-navigation-position {
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.azkar-navigation .button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
 @media (max-width: 820px) {
   .app {
     width: min(100% - 28px, 680px);
@@ -1499,6 +1538,7 @@ summary {
 
   .topbar-actions {
     justify-content: flex-start;
+    flex-wrap: wrap;
     min-width: 0;
     width: 100%;
   }
@@ -1508,7 +1548,13 @@ summary {
   }
 
   .main-tabs {
-    width: 100%;
+    flex: 1 1 220px;
+    width: auto;
+  }
+
+  .update-action {
+    flex: 1 1 170px;
+    max-width: 210px;
   }
 
   .azkar-toolbar {

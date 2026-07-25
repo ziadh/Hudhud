@@ -22,6 +22,7 @@ export interface AppStateBag {
   currentAzkarView: AzkarView;
   currentAzkarPeriod: AzkarPeriod;
   currentAzkarLayout: AzkarLayout;
+  currentAzkarEntryIndex: number;
   azkarDisplayPreferences: AzkarDisplayPreferences;
   currentStep: SetupStep;
   currentSettingsTab: SettingsTab;
@@ -48,6 +49,7 @@ export const state: AppStateBag = {
   currentAzkarView: "home",
   currentAzkarPeriod: "morning",
   currentAzkarLayout: "single",
+  currentAzkarEntryIndex: 0,
   azkarDisplayPreferences: {
     transliteration: true,
     translation: true,

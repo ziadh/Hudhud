@@ -3,6 +3,11 @@ import {
   parseAzkarDisplayPreferences,
   toggleAzkarDisplayPreference,
 } from "./azkar-display";
+import {
+  clampAzkarEntryIndex,
+  getInitialAzkarEntryIndex,
+  moveAzkarEntryIndex,
+} from "./azkar-navigation";
 import { azkarList } from "./dom";
 import { escapeHtml } from "./formatters";
 import { state } from "./state";
@@ -84,6 +89,23 @@ export function bindAzkarEvents(): void {
       return;
     }
 
+    const navigationButton = target.closest<HTMLButtonElement>(
+      "[data-azkar-navigation]",
+    );
+    if (navigationButton !== null) {
+      const direction = navigationButton.dataset.azkarNavigation;
+      if (direction === "previous" || direction === "next") {
+        const entryCount = getEntriesForPeriod(state.currentAzkarPeriod).length;
+        state.currentAzkarEntryIndex = moveAzkarEntryIndex(
+          state.currentAzkarEntryIndex,
+          direction,
+          entryCount,
+        );
+        renderAzkar();
+      }
+      return;
+    }
+
     const button = target.closest<HTMLButtonElement>("[data-azkar-entry]");
     if (button === null) {
       return;
@@ -103,6 +125,12 @@ export function setAzkarPeriod(period: AzkarPeriod): void {
   state.currentAzkarPeriod = period;
   state.currentAzkarLayout = loadAzkarLayout();
   state.azkarDisplayPreferences = loadAzkarDisplayPreferences();
+  const progress = loadTodayProgress();
+  state.currentAzkarEntryIndex = getInitialAzkarEntryIndex(
+    getEntriesForPeriod(period).map(
+      (entry) => getEntryCount(progress, entry) >= entry.repeat,
+    ),
+  );
   renderAzkar();
 }
 
@@ -177,6 +205,10 @@ function renderAzkarReader(): void {
   const totalCount = entries.length;
   const isPeriodComplete = totalCount > 0 && completedCount === totalCount;
   const layout = state.currentAzkarLayout;
+  state.currentAzkarEntryIndex = clampAzkarEntryIndex(
+    state.currentAzkarEntryIndex,
+    totalCount,
+  );
 
   if (progress.completed[state.currentAzkarPeriod] !== isPeriodComplete) {
     progress.completed[state.currentAzkarPeriod] = isPeriodComplete;
@@ -185,7 +217,7 @@ function renderAzkarReader(): void {
 
   const cards =
     layout === "single"
-      ? renderSingleCard(entries, progress)
+      ? renderSingleCard(entries, progress, state.currentAzkarEntryIndex)
       : entries.map((entry) => renderEntry(entry, progress)).join("");
 
   azkarList.innerHTML = `
@@ -221,6 +253,7 @@ function renderAzkarReader(): void {
     <div class="azkar-cards">
       ${cards}
     </div>
+    ${layout === "single" ? renderSingleNavigation(totalCount) : ""}
   `;
 }
 
@@ -246,14 +279,37 @@ function renderLayoutButton(mode: AzkarLayout, current: AzkarLayout): string {
 function renderSingleCard(
   entries: readonly AzkarEntry[],
   progress: DailyProgress,
+  index: number,
 ): string {
-  const current = entries.find(
-    (entry) => getEntryCount(progress, entry) < entry.repeat,
-  );
+  const current = entries[index];
   if (current === undefined) {
     return "";
   }
   return renderEntry(current, progress);
+}
+
+function renderSingleNavigation(totalCount: number): string {
+  if (totalCount === 0) {
+    return "";
+  }
+
+  const index = state.currentAzkarEntryIndex;
+  const position = index + 1;
+  return `
+    <nav class="azkar-navigation" aria-label="Azkar navigation">
+      <button class="button secondary" type="button" data-azkar-navigation="previous"
+        aria-label="Previous azkar, ${Math.max(position - 1, 1)} of ${totalCount}"
+        ${index === 0 ? "disabled" : ""}>
+        <span aria-hidden="true">←</span> Previous
+      </button>
+      <span class="azkar-navigation-position" aria-live="polite">${position} of ${totalCount}</span>
+      <button class="button secondary" type="button" data-azkar-navigation="next"
+        aria-label="Next azkar, ${Math.min(position + 1, totalCount)} of ${totalCount}"
+        ${index === totalCount - 1 ? "disabled" : ""}>
+        Next <span aria-hidden="true">→</span>
+      </button>
+    </nav>
+  `;
 }
 
 function renderEntry(entry: AzkarEntry, progress: DailyProgress): string {
@@ -268,11 +324,12 @@ function renderEntry(entry: AzkarEntry, progress: DailyProgress): string {
 
   return `
     <article class="azkar-card${isComplete ? " complete" : ""}">
-      <div class="azkar-card-header">
-        <span>${escapeHtml(entry.reference)}</span>
-        <span>${entry.repeat}x</span>
-      </div>
-      <p class="azkar-arabic" lang="ar" dir="rtl">${escapeHtml(entry.arabic)}</p>
+      <p class="azkar-arabic" lang="ar" dir="rtl">
+        <span>${escapeHtml(entry.arabic)}</span>
+        <span class="azkar-repeat-separator" aria-hidden="true">·</span>
+        <bdi class="azkar-repeat" dir="ltr" aria-label="Repeat ${entry.repeat} ${entry.repeat === 1 ? "time" : "times"}">×${entry.repeat}</bdi>
+      </p>
+      <p class="azkar-reference">${escapeHtml(entry.reference)}</p>
       ${
         state.azkarDisplayPreferences.transliteration
           ? `<div class="azkar-supporting-text">
@@ -304,6 +361,7 @@ function incrementCounter(entry: AzkarEntry): void {
   }
 
   progress.counters[entry.id] = current + 1;
+  const reachedTarget = current + 1 >= entry.repeat;
 
   const period = entry.period;
   const wasComplete = progress.completed[period];
@@ -314,6 +372,13 @@ function incrementCounter(entry: AzkarEntry): void {
   progress.completed[period] = isComplete;
 
   saveTodayProgress(progress);
+  if (state.currentAzkarLayout === "single" && reachedTarget) {
+    state.currentAzkarEntryIndex = moveAzkarEntryIndex(
+      state.currentAzkarEntryIndex,
+      "next",
+      periodEntries.length,
+    );
+  }
   renderAzkar();
   window.dispatchEvent(new CustomEvent("azkar:progress-changed"));
   if (isComplete && !wasComplete) {
@@ -441,9 +506,7 @@ function isDailyProgressStore(value: unknown): value is DailyProgressStore {
     return false;
   }
 
-  return Object.values(value as Record<string, unknown>).every(
-    isDailyProgress,
-  );
+  return Object.values(value as Record<string, unknown>).every(isDailyProgress);
 }
 
 function isDailyProgress(value: unknown): value is DailyProgress {

@@ -26,16 +26,15 @@
         <p class="subtitle">Prayer times tuned to your location.</p>
       </div>
       <div class="topbar-actions">
+        <nav class="main-tabs" role="tablist" aria-label="Hudhud sections">
+          <button class="main-tab active" type="button" role="tab" aria-controls="prayer-tab-panel"
+            aria-selected="true" data-main-tab="prayer">Prayer</button>
+          <button class="main-tab" type="button" role="tab" aria-controls="azkar-tab-panel" aria-selected="false"
+            data-main-tab="azkar">Azkar</button>
+        </nav>
         <button id="update-action" class="update-action" type="button" hidden></button>
       </div>
     </header>
-
-    <nav class="main-tabs" role="tablist" aria-label="Hudhud sections">
-      <button class="main-tab active" type="button" role="tab" aria-controls="prayer-tab-panel" aria-selected="true"
-        data-main-tab="prayer">Prayer</button>
-      <button class="main-tab" type="button" role="tab" aria-controls="azkar-tab-panel" aria-selected="false"
-        data-main-tab="azkar">Azkar</button>
-    </nav>
 
     <section id="prayer-tab-panel" class="tab-panel">
       <div id="prayer-banner" class="prayer-banner" hidden>
