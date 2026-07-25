@@ -1,3 +1,15 @@
+## v0.7.3
+
+- Tighten Azkar reader layout for single mode
+- Add noEmit to dev typecheck watch
+- Expand countries city dataset
+- Bundle country cities data locally
+- Add single-entry azkar navigation
+- Persist azkar progress per day and restore prayer confirmations
+- Add automatic changelog generation to release workflow
+- Remove CHANGELOG.md
+- Document v0.7.2 release in changelog
+
 ## v0.7.2
 
 - Fix Linux auto start bug
