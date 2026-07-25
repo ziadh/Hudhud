@@ -84,7 +84,7 @@ async function startDev(): Promise<void> {
     return;
   }
 
-  startProcess([bunBin, "x", "tsc", "--watch", "--preserveWatchOutput"]);
+  startProcess([bunBin, "x", "tsc", "--watch", "--preserveWatchOutput", "--noEmit"]);
   startProcess([bunBin, electronmonCli, "."]);
 }
 
