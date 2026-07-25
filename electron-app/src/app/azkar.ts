@@ -165,6 +165,7 @@ export function getLocalDateKey(date = new Date()): string {
 }
 
 function renderAzkarHome(): void {
+  azkarList.classList.remove("azkar-list-single");
   const progress = loadTodayProgress();
   azkarList.innerHTML = `
     <div class="azkar-home-cards">
@@ -205,6 +206,7 @@ function renderAzkarReader(): void {
   const totalCount = entries.length;
   const isPeriodComplete = totalCount > 0 && completedCount === totalCount;
   const layout = state.currentAzkarLayout;
+  azkarList.classList.toggle("azkar-list-single", layout === "single");
   state.currentAzkarEntryIndex = clampAzkarEntryIndex(
     state.currentAzkarEntryIndex,
     totalCount,
@@ -329,7 +331,12 @@ function renderEntry(entry: AzkarEntry, progress: DailyProgress): string {
         <span class="azkar-repeat-separator" aria-hidden="true">·</span>
         <bdi class="azkar-repeat" dir="ltr" aria-label="Repeat ${entry.repeat} ${entry.repeat === 1 ? "time" : "times"}">×${entry.repeat}</bdi>
       </p>
-      <p class="azkar-reference">${escapeHtml(entry.reference)}</p>
+      <div class="azkar-reference-row">
+        <p class="azkar-reference">${escapeHtml(entry.reference)}</p>
+        <button class="button ${isComplete ? "secondary" : "primary"} azkar-counter" type="button" data-azkar-entry="${escapeHtml(entry.id)}">
+          ${escapeHtml(buttonLabel)}
+        </button>
+      </div>
       ${
         state.azkarDisplayPreferences.transliteration
           ? `<div class="azkar-supporting-text">
@@ -346,9 +353,6 @@ function renderEntry(entry: AzkarEntry, progress: DailyProgress): string {
             </div>`
           : ""
       }
-      <button class="button ${isComplete ? "secondary" : "primary"} azkar-counter" type="button" data-azkar-entry="${escapeHtml(entry.id)}">
-        ${escapeHtml(buttonLabel)}
-      </button>
     </article>
   `;
 }
