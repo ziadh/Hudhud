@@ -211,6 +211,14 @@ function renderAzkarReader(): void {
     state.currentAzkarEntryIndex,
     totalCount,
   );
+  const progressCount =
+    layout === "single" && totalCount > 0
+      ? state.currentAzkarEntryIndex + 1
+      : completedCount;
+  const progressLabel =
+    layout === "single"
+      ? `${progressCount} of ${totalCount} viewed`
+      : `${progressCount} of ${totalCount} completed`;
 
   if (progress.completed[state.currentAzkarPeriod] !== isPeriodComplete) {
     progress.completed[state.currentAzkarPeriod] = isPeriodComplete;
@@ -248,8 +256,8 @@ function renderAzkarReader(): void {
         </div>
       </div>
     </div>
-    <div class="azkar-progress" aria-label="${completedCount} of ${totalCount} completed">
-      <span style="width: ${totalCount === 0 ? 0 : (completedCount / totalCount) * 100}%"></span>
+    <div class="azkar-progress" aria-label="${progressLabel}">
+      <span style="width: ${totalCount === 0 ? 0 : (progressCount / totalCount) * 100}%"></span>
     </div>
     ${isPeriodComplete ? `<p class="azkar-complete">Completed for today.</p>` : ""}
     <div class="azkar-cards">
