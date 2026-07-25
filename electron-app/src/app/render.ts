@@ -96,7 +96,7 @@ function renderTimes(
               </div>
               ${
                 isNextPrayer
-                  ? `<div class="time-remaining" aria-label="${escapeHtml(nextPrayer.remaining)}">${renderCountdown(nextPrayer.remaining)}</div>`
+                  ? `<div class="time-remaining" aria-label="${escapeHtml(nextPrayer.remaining)} remaining">${renderClockIcon()}<span class="countdown-digits">${renderCountdown(nextPrayer.remaining)}</span></div>`
                   : ""
               }
             </div>
@@ -128,8 +128,17 @@ function renderTimeHeader(name: PrayerName, isNextPrayer = false): string {
     <div class="time-header">
       ${renderPrayerIcon(name)}
       <div class="time-name">${name}</div>
-      ${isNextPrayer ? `<div class="next-pill">Next</div>` : ""}
+      ${isNextPrayer ? `<span class="next-marker" aria-hidden="true"></span><span class="sr-only">Next prayer</span>` : ""}
     </div>
+  `;
+}
+
+function renderClockIcon(): string {
+  return `
+    <svg class="clock-icon" aria-hidden="true" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"></circle>
+      <path d="M12 7v5l3.2 2"></path>
+    </svg>
   `;
 }
 

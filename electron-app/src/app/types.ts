@@ -101,12 +101,6 @@ export interface CountryCities {
   cities: string[];
 }
 
-export interface CountriesNowResponse {
-  error?: boolean;
-  msg?: string;
-  data?: CountryCities[];
-}
-
 export interface StateOption {
   name: string;
   state_code?: string;

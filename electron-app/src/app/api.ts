@@ -1,16 +1,11 @@
 import type { PrayerSettings } from "../types";
-import {
-  API_BASE,
-  COUNTRIES_API,
-  STATE_CITIES_API,
-  STATES_API,
-} from "./constants";
+import countriesData from "./countries-data.json";
+import { API_BASE, STATE_CITIES_API, STATES_API } from "./constants";
 import { formatApiDate, getMethodLabel } from "./formatters";
 import { isRecord } from "./parsers";
 import { stateCache, stateCityCache } from "./state";
 import type {
   AladhanResponse,
-  CountriesNowResponse,
   CountryCities,
   PrayerName,
   PrayerResult,
@@ -23,31 +18,7 @@ import type {
 const REQUEST_TIMEOUT_MS = 15_000;
 
 export async function loadCountries(): Promise<CountryCities[]> {
-  const response = await fetchWithTimeout(COUNTRIES_API);
-  if (!response.ok) {
-    throw new Error("Country list could not be loaded.");
-  }
-
-  const raw: unknown = await response.json();
-  if (!isRecord(raw)) {
-    throw new Error("Country list could not be loaded.");
-  }
-  const payload = raw as CountriesNowResponse;
-  if (payload.error === true || !Array.isArray(payload.data)) {
-    throw new Error("Country list could not be loaded.");
-  }
-
-  return payload.data
-    .filter(
-      (item) => typeof item.country === "string" && Array.isArray(item.cities),
-    )
-    .map((item) => ({
-      country: item.country,
-      cities: item.cities
-        .filter((city) => typeof city === "string" && city.trim() !== "")
-        .sort(),
-    }))
-    .sort((a, b) => a.country.localeCompare(b.country));
+  return countriesData;
 }
 
 export async function getStates(country: string): Promise<StateOption[]> {

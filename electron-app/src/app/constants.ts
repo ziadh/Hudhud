@@ -2,7 +2,6 @@ import type { PrayerSettings } from "../types";
 import type { HybridOption, MethodOption } from "./types";
 
 export const API_BASE = "https://api.aladhan.com/v1/timingsByCity";
-export const COUNTRIES_API = "https://countriesnow.space/api/v0.1/countries";
 export const STATES_API =
   "https://countriesnow.space/api/v0.1/countries/states";
 export const STATE_CITIES_API =

@@ -42,7 +42,7 @@ export function formatCountdown(target: Date, now = new Date()): string {
   const minutes = Math.floor((remainingSeconds % 3600) / 60);
   const seconds = remainingSeconds % 60;
 
-  return `in ${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  return `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
 
 export function formatApiDate(date: Date): string {
@@ -85,13 +85,16 @@ export function renderCountdown(value: string): string {
 }
 
 export function updateCountdown(container: HTMLElement, value: string): void {
-  container.setAttribute("aria-label", value);
-  const parts = Array.from(
-    container.querySelectorAll<HTMLElement>(".countdown-part"),
-  );
+  container.setAttribute("aria-label", `${value} remaining`);
+  const digits = container.querySelector<HTMLElement>(".countdown-digits");
+  if (digits === null) {
+    return;
+  }
+
+  const parts = Array.from(digits.querySelectorAll<HTMLElement>(".countdown-part"));
 
   if (parts.length !== value.length) {
-    container.innerHTML = renderCountdown(value);
+    digits.innerHTML = renderCountdown(value);
     return;
   }
 
