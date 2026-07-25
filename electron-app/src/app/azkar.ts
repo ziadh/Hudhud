@@ -8,6 +8,10 @@ import {
   getInitialAzkarEntryIndex,
   moveAzkarEntryIndex,
 } from "./azkar-navigation";
+import {
+  loadAzkarNavigationState,
+  saveAzkarNavigationState,
+} from "./azkar-navigation-state";
 import { azkarList } from "./dom";
 import { escapeHtml } from "./formatters";
 import { state } from "./state";
@@ -101,6 +105,7 @@ export function bindAzkarEvents(): void {
           direction,
           entryCount,
         );
+        saveCurrentAzkarNavigationState();
         renderAzkar();
       }
       return;
@@ -131,12 +136,23 @@ export function setAzkarPeriod(period: AzkarPeriod): void {
       (entry) => getEntryCount(progress, entry) >= entry.repeat,
     ),
   );
+  saveCurrentAzkarNavigationState();
   renderAzkar();
 }
 
 export function showAzkarHome(): void {
   state.currentAzkarView = "home";
+  saveCurrentAzkarNavigationState();
   renderAzkar();
+}
+
+export function hydrateAzkarNavigationState(): void {
+  const navigation = loadAzkarNavigationState();
+  state.currentAzkarView = navigation.view;
+  state.currentAzkarPeriod = navigation.period;
+  state.currentAzkarEntryIndex = navigation.entryIndex;
+  state.currentAzkarLayout = loadAzkarLayout();
+  state.azkarDisplayPreferences = loadAzkarDisplayPreferences();
 }
 
 export function renderAzkar(): void {
@@ -207,10 +223,14 @@ function renderAzkarReader(): void {
   const isPeriodComplete = totalCount > 0 && completedCount === totalCount;
   const layout = state.currentAzkarLayout;
   azkarList.classList.toggle("azkar-list-single", layout === "single");
-  state.currentAzkarEntryIndex = clampAzkarEntryIndex(
+  const clampedEntryIndex = clampAzkarEntryIndex(
     state.currentAzkarEntryIndex,
     totalCount,
   );
+  if (clampedEntryIndex !== state.currentAzkarEntryIndex) {
+    state.currentAzkarEntryIndex = clampedEntryIndex;
+    saveCurrentAzkarNavigationState();
+  }
   const progressCount =
     layout === "single" && totalCount > 0
       ? state.currentAzkarEntryIndex + 1
@@ -390,6 +410,7 @@ function incrementCounter(entry: AzkarEntry): void {
       "next",
       periodEntries.length,
     );
+    saveCurrentAzkarNavigationState();
   }
   renderAzkar();
   window.dispatchEvent(new CustomEvent("azkar:progress-changed"));
@@ -419,6 +440,14 @@ function getEntry(id: string): AzkarEntry | null {
 
 function getEntriesForPeriod(period: AzkarPeriod): readonly AzkarEntry[] {
   return azkarEntries.filter((entry) => entry.period === period);
+}
+
+function saveCurrentAzkarNavigationState(): void {
+  saveAzkarNavigationState({
+    view: state.currentAzkarView,
+    period: state.currentAzkarPeriod,
+    entryIndex: state.currentAzkarEntryIndex,
+  });
 }
 
 function loadProgressStore(): DailyProgressStore {

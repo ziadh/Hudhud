@@ -1,6 +1,11 @@
 import type { AppDestination, PrayerSettings } from "../types";
 import { fetchPrayerTimes } from "./api";
-import { bindAzkarEvents, renderAzkar, setAzkarPeriod } from "./azkar";
+import {
+  bindAzkarEvents,
+  hydrateAzkarNavigationState,
+  renderAzkar,
+  setAzkarPeriod,
+} from "./azkar";
 import { defaultSettings } from "./constants";
 import { bindEvents } from "./controller-events";
 import {
@@ -72,6 +77,7 @@ export async function init(): Promise<void> {
   bindReleaseNotesEvents();
   setRolloverHandler(handleNextPrayerRollover);
   setMainTab("prayer");
+  hydrateAzkarNavigationState();
   renderAzkar();
   hydrateConfirmedPrayerOccurrences();
   startPetScheduler();

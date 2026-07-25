@@ -15,6 +15,12 @@ export type AzkarView = "home" | "reader";
 export type AzkarLayout = "single" | "all";
 export type { AzkarPeriod, MainTab };
 
+export interface AzkarNavigationState {
+  view: AzkarView;
+  period: AzkarPeriod;
+  entryIndex: number;
+}
+
 export type MainPrayer = (typeof MAIN_PRAYERS)[number];
 export type SecondaryPrayer = (typeof SECONDARY_PRAYERS)[number];
 export type PrayerName = MainPrayer | SecondaryPrayer;

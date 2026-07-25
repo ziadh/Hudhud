@@ -1,4 +1,3 @@
-import { showAzkarHome } from "./azkar";
 import { defaultSettings } from "./constants";
 import {
   clearScheduledPreview,
@@ -60,6 +59,7 @@ import { parseSchool, parseSettingsTab } from "./parsers";
 import { clearHappyTimeout } from "./pet-scheduler";
 import { confirmedPrayerOccurrences, state } from "./state";
 import {
+  AZKAR_NAVIGATION_KEY,
   AZKAR_PROGRESS_KEY,
   PRAYER_CONFIRM_HINT_SEEN_KEY,
   SETTINGS_KEY,
@@ -114,6 +114,10 @@ export function bindEvents(): void {
     localStorage.removeItem(SETTINGS_KEY);
     localStorage.removeItem(PRAYER_CONFIRM_HINT_SEEN_KEY);
     localStorage.removeItem(AZKAR_PROGRESS_KEY);
+    localStorage.removeItem(AZKAR_NAVIGATION_KEY);
+    state.currentAzkarView = "home";
+    state.currentAzkarPeriod = "morning";
+    state.currentAzkarEntryIndex = 0;
     petAlwaysOnTop.checked = true;
     void savePetAlwaysOnTopPreference();
     state.previewResult = null;
@@ -202,7 +206,6 @@ export function bindEvents(): void {
         setMainTab("prayer");
       } else if (button.dataset.mainTab === "azkar") {
         setMainTab("azkar");
-        showAzkarHome();
       }
     });
   }
