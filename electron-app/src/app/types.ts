@@ -63,11 +63,13 @@ export interface AzkarDisplayPreferences {
   translation: boolean;
 }
 
-export interface AzkarProgress {
-  date: string;
+export interface DailyProgress {
   counters: Record<string, number>;
   completed: Record<AzkarPeriod, boolean>;
+  confirmedPrayers: string[];
 }
+
+export type DailyProgressStore = Record<string, DailyProgress>;
 
 export interface AladhanResponse {
   code?: number;

@@ -16,16 +16,19 @@ import type {
   AzkarEntry,
   AzkarLayout,
   AzkarPeriod,
-  AzkarProgress,
+  DailyProgress,
+  DailyProgressStore,
 } from "./types";
 
-const emptyProgress = (date: string): AzkarProgress => ({
-  date,
+const MAX_RETAINED_DAYS = 3;
+
+const emptyProgress = (): DailyProgress => ({
   counters: {},
   completed: {
     morning: false,
     evening: false,
   },
+  confirmedPrayers: [],
 });
 
 export function bindAzkarEvents(): void {
@@ -118,7 +121,7 @@ export function renderAzkar(): void {
 }
 
 export function isAzkarComplete(period: AzkarPeriod): boolean {
-  const progress = loadAzkarProgress();
+  const progress = loadTodayProgress();
   const entries = getEntriesForPeriod(period);
   return (
     entries.length > 0 &&
@@ -134,7 +137,7 @@ export function getLocalDateKey(date = new Date()): string {
 }
 
 function renderAzkarHome(): void {
-  const progress = loadAzkarProgress();
+  const progress = loadTodayProgress();
   azkarList.innerHTML = `
     <div class="azkar-home-cards">
       ${renderPeriodCard("morning", progress)}
@@ -145,7 +148,7 @@ function renderAzkarHome(): void {
 
 function renderPeriodCard(
   period: AzkarPeriod,
-  progress: AzkarProgress,
+  progress: DailyProgress,
 ): string {
   const entries = getEntriesForPeriod(period);
   const completedCount = getCompletedCount(entries, progress);
@@ -168,7 +171,7 @@ function renderPeriodCard(
 }
 
 function renderAzkarReader(): void {
-  const progress = loadAzkarProgress();
+  const progress = loadTodayProgress();
   const entries = getEntriesForPeriod(state.currentAzkarPeriod);
   const completedCount = getCompletedCount(entries, progress);
   const totalCount = entries.length;
@@ -177,7 +180,7 @@ function renderAzkarReader(): void {
 
   if (progress.completed[state.currentAzkarPeriod] !== isPeriodComplete) {
     progress.completed[state.currentAzkarPeriod] = isPeriodComplete;
-    saveAzkarProgress(progress);
+    saveTodayProgress(progress);
   }
 
   const cards =
@@ -242,7 +245,7 @@ function renderLayoutButton(mode: AzkarLayout, current: AzkarLayout): string {
 
 function renderSingleCard(
   entries: readonly AzkarEntry[],
-  progress: AzkarProgress,
+  progress: DailyProgress,
 ): string {
   const current = entries.find(
     (entry) => getEntryCount(progress, entry) < entry.repeat,
@@ -253,7 +256,7 @@ function renderSingleCard(
   return renderEntry(current, progress);
 }
 
-function renderEntry(entry: AzkarEntry, progress: AzkarProgress): string {
+function renderEntry(entry: AzkarEntry, progress: DailyProgress): string {
   const count = getEntryCount(progress, entry);
   const isComplete = count >= entry.repeat;
   const buttonLabel =
@@ -294,7 +297,7 @@ function renderEntry(entry: AzkarEntry, progress: AzkarProgress): string {
 }
 
 function incrementCounter(entry: AzkarEntry): void {
-  const progress = loadAzkarProgress();
+  const progress = loadTodayProgress();
   const current = getEntryCount(progress, entry);
   if (current >= entry.repeat) {
     return;
@@ -310,7 +313,7 @@ function incrementCounter(entry: AzkarEntry): void {
   );
   progress.completed[period] = isComplete;
 
-  saveAzkarProgress(progress);
+  saveTodayProgress(progress);
   renderAzkar();
   window.dispatchEvent(new CustomEvent("azkar:progress-changed"));
   if (isComplete && !wasComplete) {
@@ -322,14 +325,14 @@ function incrementCounter(entry: AzkarEntry): void {
 
 function getCompletedCount(
   entries: readonly AzkarEntry[],
-  progress: AzkarProgress,
+  progress: DailyProgress,
 ): number {
   return entries.filter(
     (entry) => getEntryCount(progress, entry) >= entry.repeat,
   ).length;
 }
 
-function getEntryCount(progress: AzkarProgress, entry: AzkarEntry): number {
+function getEntryCount(progress: DailyProgress, entry: AzkarEntry): number {
   return Math.min(progress.counters[entry.id] ?? 0, entry.repeat);
 }
 
@@ -341,27 +344,77 @@ function getEntriesForPeriod(period: AzkarPeriod): readonly AzkarEntry[] {
   return azkarEntries.filter((entry) => entry.period === period);
 }
 
-function loadAzkarProgress(): AzkarProgress {
-  const today = getLocalDateKey();
+function loadProgressStore(): DailyProgressStore {
   const raw = localStorage.getItem(AZKAR_PROGRESS_KEY);
   if (raw === null) {
-    return emptyProgress(today);
+    return {};
   }
 
   try {
     const parsed: unknown = JSON.parse(raw);
-    if (!isAzkarProgress(parsed) || parsed.date !== today) {
-      return emptyProgress(today);
+    if (!isDailyProgressStore(parsed)) {
+      return {};
     }
-    return parsed;
+    return pruneStore(parsed);
   } catch (err) {
-    console.error("Failed to parse azkar progress:", err);
-    return emptyProgress(today);
+    console.error("Failed to parse daily progress store:", err);
+    return {};
   }
 }
 
-function saveAzkarProgress(progress: AzkarProgress): void {
-  localStorage.setItem(AZKAR_PROGRESS_KEY, JSON.stringify(progress));
+function saveProgressStore(store: DailyProgressStore): void {
+  localStorage.setItem(AZKAR_PROGRESS_KEY, JSON.stringify(pruneStore(store)));
+}
+
+function pruneStore(
+  store: DailyProgressStore,
+  referenceDate = new Date(),
+): DailyProgressStore {
+  const cutoff = new Date(referenceDate);
+  cutoff.setDate(cutoff.getDate() - (MAX_RETAINED_DAYS - 1));
+  const cutoffKey = getLocalDateKey(cutoff);
+
+  const pruned: DailyProgressStore = {};
+  for (const [dateKey, entry] of Object.entries(store)) {
+    if (dateKey >= cutoffKey) {
+      pruned[dateKey] = entry;
+    }
+  }
+  return pruned;
+}
+
+function loadTodayProgress(): DailyProgress {
+  const today = getLocalDateKey();
+  return loadProgressStore()[today] ?? emptyProgress();
+}
+
+function saveTodayProgress(progress: DailyProgress): void {
+  const today = getLocalDateKey();
+  const store = loadProgressStore();
+  store[today] = progress;
+  saveProgressStore(store);
+}
+
+export function addConfirmedPrayerOccurrence(key: string): void {
+  const today = getLocalDateKey();
+  const store = loadProgressStore();
+  const todayProgress = store[today] ?? emptyProgress();
+  if (!todayProgress.confirmedPrayers.includes(key)) {
+    todayProgress.confirmedPrayers = [...todayProgress.confirmedPrayers, key];
+  }
+  store[today] = todayProgress;
+  saveProgressStore(store);
+}
+
+export function getConfirmedPrayerOccurrences(): Set<string> {
+  const store = loadProgressStore();
+  const occurrences = new Set<string>();
+  for (const progress of Object.values(store)) {
+    for (const key of progress.confirmedPrayers) {
+      occurrences.add(key);
+    }
+  }
+  return occurrences;
 }
 
 function loadAzkarLayout(): AzkarLayout {
@@ -383,20 +436,30 @@ function saveAzkarDisplayPreferences(
   localStorage.setItem(AZKAR_DISPLAY_KEY, JSON.stringify(preferences));
 }
 
-function isAzkarProgress(value: unknown): value is AzkarProgress {
+function isDailyProgressStore(value: unknown): value is DailyProgressStore {
   if (typeof value !== "object" || value === null) {
     return false;
   }
 
-  const record = value as Partial<AzkarProgress>;
+  return Object.values(value as Record<string, unknown>).every(
+    isDailyProgress,
+  );
+}
+
+function isDailyProgress(value: unknown): value is DailyProgress {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const record = value as Partial<DailyProgress>;
   return (
-    typeof record.date === "string" &&
     typeof record.counters === "object" &&
     record.counters !== null &&
     typeof record.completed === "object" &&
     record.completed !== null &&
     typeof record.completed.morning === "boolean" &&
-    typeof record.completed.evening === "boolean"
+    typeof record.completed.evening === "boolean" &&
+    Array.isArray(record.confirmedPrayers)
   );
 }
 

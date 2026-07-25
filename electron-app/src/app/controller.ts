@@ -32,6 +32,7 @@ import { loadCountryCityOptions } from "./location";
 import {
   confirmActivePrayer,
   confirmCurrentPrayer,
+  hydrateConfirmedPrayerOccurrences,
   setPetStatusCallback,
   startPetScheduler,
   triggerPetHappy,
@@ -72,6 +73,7 @@ export async function init(): Promise<void> {
   setRolloverHandler(handleNextPrayerRollover);
   setMainTab("prayer");
   renderAzkar();
+  hydrateConfirmedPrayerOccurrences();
   startPetScheduler();
   setState("loading");
 

@@ -1,5 +1,9 @@
 import type { MainPrayerName, PetStatus } from "../types";
-import { isAzkarComplete } from "./azkar";
+import {
+  addConfirmedPrayerOccurrence,
+  getConfirmedPrayerOccurrences,
+  isAzkarComplete,
+} from "./azkar";
 import {
   MAIN_PRAYERS,
   PET_ALERT_WINDOW_MS,
@@ -94,9 +98,16 @@ export function confirmCurrentPrayer(prayer: MainPrayerName): void {
   }
 
   confirmedPrayerOccurrences.add(decision.activeOccurrenceKey);
+  addConfirmedPrayerOccurrence(decision.activeOccurrenceKey);
   markPrayerConfirmHintSeen();
   state.activePrayerOccurrenceKey = null;
   triggerPetHappy();
+}
+
+export function hydrateConfirmedPrayerOccurrences(): void {
+  for (const key of getConfirmedPrayerOccurrences()) {
+    confirmedPrayerOccurrences.add(key);
+  }
 }
 
 export function triggerPetHappy(): void {
