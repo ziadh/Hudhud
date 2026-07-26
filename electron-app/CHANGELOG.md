@@ -1,3 +1,10 @@
+## v0.7.4
+
+- Persist azkar navigation state
+- Show viewed progress in single azkar layout
+- Trim stale v0.7.3 changelog entries
+- docs: update changelog for v0.7.3 [skip ci]
+
 ## v0.7.3
 
 - Tighten Azkar reader layout for single mode
