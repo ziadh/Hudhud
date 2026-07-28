@@ -1,3 +1,9 @@
+## v0.7.5
+
+- Improve single-entry azkar navigation UX
+- Auto-complete single-count azkar on navigation
+- docs: update changelog for v0.7.4 [skip ci]
+
 ## v0.7.4
 
 - Persist azkar navigation state
