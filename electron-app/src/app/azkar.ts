@@ -105,11 +105,10 @@ export function bindAzkarEvents(): void {
         if (
           direction === "next" &&
           currentEntry !== undefined &&
-          currentEntry.repeat === 1 &&
           getEntryCount(progress, currentEntry) < currentEntry.repeat
         ) {
-          // Single-count azkar have no separate "mark done" step; advancing past one is the completion action.
-          incrementCounter(currentEntry);
+          // Moving forward is the completion action in the single-entry reader.
+          completeEntry(currentEntry);
         } else {
           state.currentAzkarEntryIndex = moveAzkarEntryIndex(
             state.currentAzkarEntryIndex,
@@ -275,7 +274,6 @@ function renderAzkarReader(): void {
         <h2>${getPeriodTitle(state.currentAzkarPeriod)}</h2>
       </div>
       <div class="azkar-summary-end">
-        <strong>${completedCount}/${totalCount}</strong>
         <div class="azkar-reader-controls">
           <div class="azkar-display-toggle" role="group" aria-label="Supporting text">
             ${renderDisplayButton("transliteration", state.azkarDisplayPreferences)}
@@ -337,6 +335,18 @@ function renderSingleNavigation(totalCount: number): string {
 
   const index = state.currentAzkarEntryIndex;
   const position = index + 1;
+  const entries = getEntriesForPeriod(state.currentAzkarPeriod);
+  const currentEntry = entries[index];
+  const progress = loadTodayProgress();
+  const currentIsComplete =
+    currentEntry !== undefined &&
+    getEntryCount(progress, currentEntry) >= currentEntry.repeat;
+  const isLast = index === totalCount - 1;
+  const nextLabel = isLast
+    ? currentIsComplete
+      ? "Finished"
+      : "Finish"
+    : "Next";
   return `
     <nav class="azkar-navigation" aria-label="Azkar navigation">
       <button class="button secondary" type="button" data-azkar-navigation="previous"
@@ -346,9 +356,9 @@ function renderSingleNavigation(totalCount: number): string {
       </button>
       <span class="azkar-navigation-position" aria-live="polite">${position} of ${totalCount}</span>
       <button class="button secondary" type="button" data-azkar-navigation="next"
-        aria-label="Next azkar, ${Math.min(position + 1, totalCount)} of ${totalCount}"
-        ${index === totalCount - 1 ? "disabled" : ""}>
-        Next <span aria-hidden="true">→</span>
+        aria-label="${isLast ? nextLabel : `Next azkar, ${position + 1} of ${totalCount}`}"
+        ${isLast && currentIsComplete ? "disabled" : ""}>
+        ${nextLabel} <span aria-hidden="true">${isLast ? "✓" : "→"}</span>
       </button>
     </nav>
   `;
@@ -398,14 +408,23 @@ function renderEntry(entry: AzkarEntry, progress: DailyProgress): string {
 }
 
 function incrementCounter(entry: AzkarEntry): void {
+  updateEntryCount(entry, false);
+}
+
+function completeEntry(entry: AzkarEntry): void {
+  updateEntryCount(entry, true);
+}
+
+function updateEntryCount(entry: AzkarEntry, complete: boolean): void {
   const progress = loadTodayProgress();
   const current = getEntryCount(progress, entry);
   if (current >= entry.repeat) {
     return;
   }
 
-  progress.counters[entry.id] = current + 1;
-  const reachedTarget = current + 1 >= entry.repeat;
+  const nextCount = complete ? entry.repeat : current + 1;
+  progress.counters[entry.id] = nextCount;
+  const reachedTarget = nextCount >= entry.repeat;
 
   const period = entry.period;
   const wasComplete = progress.completed[period];

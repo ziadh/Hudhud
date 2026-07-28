@@ -1369,12 +1369,6 @@ summary {
   gap: 12px;
 }
 
-.azkar-summary strong {
-  color: var(--green);
-  font-size: 1.2rem;
-  font-weight: 780;
-}
-
 .azkar-summary-end {
   display: flex;
   flex-direction: column;
