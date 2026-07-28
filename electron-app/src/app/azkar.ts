@@ -99,14 +99,26 @@ export function bindAzkarEvents(): void {
     if (navigationButton !== null) {
       const direction = navigationButton.dataset.azkarNavigation;
       if (direction === "previous" || direction === "next") {
-        const entryCount = getEntriesForPeriod(state.currentAzkarPeriod).length;
-        state.currentAzkarEntryIndex = moveAzkarEntryIndex(
-          state.currentAzkarEntryIndex,
-          direction,
-          entryCount,
-        );
-        saveCurrentAzkarNavigationState();
-        renderAzkar();
+        const entries = getEntriesForPeriod(state.currentAzkarPeriod);
+        const currentEntry = entries[state.currentAzkarEntryIndex];
+        const progress = loadTodayProgress();
+        if (
+          direction === "next" &&
+          currentEntry !== undefined &&
+          currentEntry.repeat === 1 &&
+          getEntryCount(progress, currentEntry) < currentEntry.repeat
+        ) {
+          // Single-count azkar have no separate "mark done" step; advancing past one is the completion action.
+          incrementCounter(currentEntry);
+        } else {
+          state.currentAzkarEntryIndex = moveAzkarEntryIndex(
+            state.currentAzkarEntryIndex,
+            direction,
+            entries.length,
+          );
+          saveCurrentAzkarNavigationState();
+          renderAzkar();
+        }
       }
       return;
     }
